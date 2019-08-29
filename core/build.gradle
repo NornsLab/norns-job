@@ -1,0 +1,4 @@
+dependencies {
+    compile rootProject.ext.dependencies["typesafe-config"]
+    compile group: 'com.typesafe.scala-logging', name: 'scala-logging_2.13', version: '3.9.2'
+}
