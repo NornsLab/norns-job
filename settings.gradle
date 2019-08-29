@@ -1,0 +1,5 @@
+rootProject.name = 'norns-job'
+include 'core'
+include 'spark-job'
+include 'flink-job'
+
