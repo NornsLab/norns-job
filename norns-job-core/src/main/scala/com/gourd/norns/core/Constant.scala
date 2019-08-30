@@ -5,12 +5,14 @@ import java.io.File
 import com.typesafe.config.ConfigFactory.{empty, parseFile, parseResources}
 import com.typesafe.config.{Config, ConfigRenderOptions}
 
-/** Job 常量
+/** norns.core Job 常量
   *
   * @author Li.Wei by 2019/8/29
   */
 object Constant {
   val norns = "norns"
+  val nornsCore = s"$norns.core"
+
   val renderOptions = ConfigRenderOptions.defaults
     .setComments(false).setOriginComments(false).setFormatted(true).setJson(true)
 

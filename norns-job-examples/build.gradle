@@ -1,0 +1,4 @@
+
+dependencies {
+    compile project(":norns-job-core")
+}

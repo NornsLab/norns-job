@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ScalaCompilerConfiguration">
-    <profile name="Gradle 1" modules="norns-job.core.main,norns-job.core.test,norns-job.flink-job.main,norns-job.flink-job.test,norns-job.norns-job-core.main,norns-job.norns-job-core.test,norns-job.spark-job.main,norns-job.spark-job.test">
+    <profile name="Gradle 1" modules="norns-job.core.main,norns-job.core.test,norns-job.flink-job.main,norns-job.flink-job.test,norns-job.norns-job-core.main,norns-job.norns-job-core.test,norns-job.norns-job-examples.main,norns-job.norns-job-examples.test,norns-job.norns-job-spark.main,norns-job.norns-job-spark.test,norns-job.spark-job.main,norns-job.spark-job.test">
       <option name="postfixOps" value="true" />
       <option name="implicitConversions" value="true" />
       <option name="existentials" value="true" />

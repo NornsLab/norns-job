@@ -46,7 +46,6 @@ allprojects {
 subprojects {
     apply plugin: 'java'
     apply plugin: 'scala'
-    apply plugin: 'checkstyle'
 
     sourceCompatibility = rootProject.ext.version["minJavaVersion"]
     targetCompatibility = rootProject.ext.version["minJavaVersion"]
@@ -89,35 +88,13 @@ subprojects {
         }
     }
 
-    checkstyle {
-        toolVersion '6.11.1'
-        showViolations true
-    }
-    check.dependsOn 'checkstyle'
-
-    //tasks.withType(Checkstyle) {
-    task checkstyle(type: Checkstyle) {
-        configFile = new File(rootDir, "checkstyle/checkstyle.xml")
-        configProperties = checkstyleConfigProperties("import-control.xml")
-        source 'src'
-        include '**/*.java'
-        exclude '**/gen/**'
-        exclude "**/test/**"
-        classpath = files()
-    }
-    /*checkstyle {
-        configFile = new File(rootDir, "checkstyle/checkstyle.xml")
-        configProperties = checkstyleConfigProperties("import-control.xml")
-        toolVersion = "$versions.checkstyle"
-    }*/
-
     dependencies {
         compile rootProject.ext.dependencies["slf4j-api"]
         compile rootProject.ext.dependencies["logback-core"]
         compile rootProject.ext.dependencies["logback-classic"]
 
-        implementation rootProject.ext.dependencies["scala-library"]
-        implementation rootProject.ext.dependencies["scala-compiler"]
+        compile rootProject.ext.dependencies["scala-library"]
+        compile rootProject.ext.dependencies["scala-compiler"]
         testImplementation rootProject.ext.dependencies["junit"]
     }
 }
