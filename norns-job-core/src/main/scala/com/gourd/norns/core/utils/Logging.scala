@@ -4,7 +4,9 @@ package core.utils
 import com.typesafe.scalalogging.Logger
 import org.slf4j.{LoggerFactory, Marker, MarkerFactory}
 
-/**
+/** 统一 log 接口
+  * slf4j
+  *
   * @author Li.Wei by 2019/8/29
   */
 trait Logging {

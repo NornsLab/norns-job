@@ -1,6 +1,8 @@
 package com.gourd.norns
 
 /**
+  * 设计原则参考 [[com.gourd.norns.core.Job]] 注释说明
+  *
   * @author Li.Wei by 2019/8/29
   */
 package object core {
@@ -15,9 +17,7 @@ package object core {
   val nornsJobJson = "norns-job.json"
   val nornsJobProperties = "norns-job.properties"
 
-  /** 读取 listJob 配置文件路径 */
-  val listJobConfig = s"${Constant.nornsCore}.core.listJobConfig"
-  /** [[ListJob ]]运行子任务类名配置 */
-  val jobRunSubJobs = s"${Constant.nornsCore}.core.runSubJobList"
+  /** [[MultiJob ]]运行子任务类名配置 */
+  val jobRunTasks = s"${Constant.nornsCore}.core.jobRunTasks"
 
 }

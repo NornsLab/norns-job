@@ -17,13 +17,13 @@ object NornsMain {
 
   def work(jobClass: String): Unit = {
     val job = ref(jobClass)
-    job.open().run()
+    job.initialize().run()
     job.close()
   }
 
   def work(jobClass: Class[_]): Unit = {
     val job = ref(jobClass)
-    job.open().run()
+    job.initialize().run()
     job.close()
   }
 }

@@ -2,4 +2,5 @@ rootProject.name = 'norns-job'
 include 'norns-job-core'
 include 'norns-job-examples'
 include 'norns-job-spark'
+include 'norns-job-flink'
 

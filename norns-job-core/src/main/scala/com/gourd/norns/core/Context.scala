@@ -6,6 +6,8 @@ import com.gourd.norns.core.utils.Logging
   *
   * @author Li.Wei by 2019/8/29
   */
-trait Context extends Logging {
+trait Context extends Logging with AutoCloseable {
   def name: String = this.getClass.getCanonicalName
+
+  override def close(): Unit = {}
 }

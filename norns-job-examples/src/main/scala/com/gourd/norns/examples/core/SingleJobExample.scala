@@ -1,6 +1,6 @@
 package com.gourd.norns.examples.core
 
-import com.gourd.norns.core.{JobContext, NornsMain, SingleJob}
+import com.gourd.norns.core.{Job, JobContext, NornsMain}
 
 /**
   * @author Li.Wei by 2019/8/30
@@ -9,17 +9,14 @@ object SingleJobExample {
   def main(args: Array[String]): Unit = NornsMain.work(classOf[SingleJobExample])
 }
 
-class SingleJobExample extends SingleJob {
+class SingleJobExample extends Job {
 
   override type JC = SingleJobExampleContext
 
   override def jc: SingleJobExampleContext = new SingleJobExampleContext
 
   /** job 运行 */
-  override def run(): Unit = {
-    info(s"$name running...")
-    info(s"$name running context.foo=${jc.foo}...")
-  }
+  override def run(): Unit = info(s"$name running... context.foo=${jc.foo}...")
 }
 
 class SingleJobExampleContext extends JobContext {
