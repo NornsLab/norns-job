@@ -4,7 +4,7 @@
 ![Gradle](https://img.shields.io/badge/Gradle-5.6.1-brightgreen.svg?style=flat-square)
 [![CodeFactor](https://www.codefactor.io/repository/github/gourderwa/norns-job/badge)](https://www.codefactor.io/repository/github/gourderwa/norns-job)
 # 为什么使用
-norns-job 为一个快速开发大数据任务的脚手架，主要解决以下问题
+norns-job 一个快速开发大数据任务工具
 - 大数据开发项目经常面临重复性变量初始化，外部配置管理复杂
 - 任务数量日益变多，相同类型任务自由组合为单个任务执行
 - 任务依赖关系变化，修改配置文件即可
