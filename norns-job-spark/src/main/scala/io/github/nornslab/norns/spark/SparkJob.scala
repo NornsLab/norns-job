@@ -13,14 +13,16 @@ trait SparkJob extends Job {
 
   override type JC = SparkJobContext
 
-  implicit override def jc: SparkJobContext = new SparkJobContext(
+  private lazy val _jc: JC = new JC(
     Map(
       "spark.app.name" -> this.getClass.getName,
       "spark.master" -> "local"
     )
   )
 
-  def sql(sql: String)(implicit a: SparkJobContext): DataFrame = a.sparkSession.sql(sql)
+  implicit override def jc: JC = _jc
+
+  def sql(sql: String)(implicit a: JC): DataFrame = a.sparkSession.sql(sql)
 }
 
 class SparkJobContext(val sparkConfSetting: Traversable[(String, String)] = Map.empty) extends JobContext {

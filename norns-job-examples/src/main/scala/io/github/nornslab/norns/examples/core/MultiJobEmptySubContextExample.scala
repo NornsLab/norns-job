@@ -1,5 +1,6 @@
 package io.github.nornslab.norns.examples.core
 
+import com.typesafe.config.{Config, ConfigFactory}
 import io.github.nornslab.norns.core._
 import io.github.nornslab.norns.core.utils.Logging
 import io.github.nornslab.norns.examples.core.MultiJobEmptySubContextExample.TaskEmpty
@@ -8,7 +9,7 @@ import io.github.nornslab.norns.examples.core.MultiJobEmptySubContextExample.Tas
   * @author Li.Wei by 2019/8/30
   */
 object MultiJobEmptySubContextExample extends Logging {
-  type TaskEmpty = Task[EmptyListJobContext, EmptyTaskContext]
+  type TaskEmpty = Task[EmptyListJobContext]
 
   def main(args: Array[String]): Unit = NornsMain.work(classOf[MultiJobEmptySubContextExample])
 }
@@ -21,23 +22,23 @@ class MultiJobEmptySubContextExample extends MultiJob {
 
   override type JC = EmptyListJobContext
 
-  override type TC = EmptyTaskContext
+  private val _jc: JC = new JC()
 
-  override def jc: EmptyListJobContext = new EmptyListJobContext()
+  override val jc: JC = _jc
 
   override def defaultTasks: Seq[TaskEmpty] = Seq(new NewGameUser(), new NewGameRole())
 
-  override def contextConvert: EmptyListJobContext => Seq[TC] = _.loadApps.sorted.map(_ => EmptyTaskContext())
+  override def contextConvert: JC => Seq[Config] = _.loadApps.sorted.map(_ => ConfigFactory.empty())
 }
 
 private class NewGameUser() extends TaskEmpty {
-  override def run(jc: EmptyListJobContext, sjc: EmptyTaskContext): Unit = {
+  override def run(jc: EmptyListJobContext, sjc: Config): Unit = {
     info(s"${this.getClass.getCanonicalName} run...")
   }
 }
 
 private class NewGameRole() extends TaskEmpty {
-  override def run(jc: EmptyListJobContext, sjc: EmptyTaskContext): Unit = {
+  override def run(jc: EmptyListJobContext, sjc: Config): Unit = {
     info(s"${this.getClass.getCanonicalName} run...")
   }
 }

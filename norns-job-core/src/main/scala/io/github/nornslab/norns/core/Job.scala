@@ -13,13 +13,17 @@ import io.github.nornslab.norns.core.utils.Logging
   *
   * =[[Context]]上下文环境说明=
   * [[Job]]       运行时依赖参数封装为[[JobContext]]，同时默认装载配置信息[[JobContext.config]]
-  * [[Task]]      运行时依赖参数封装为[[TaskContext]]
-  * 对于[[MultiJob]]模式任务，支持将 [[JobContext]]转换为多个[[TaskContext]]，每个[[Task]]依赖[[TaskContext]]执行一次
+  * [[Task]]      运行时依赖参数封装为[[Config]]
+  * 对于[[MultiJob]]模式任务，支持将 [[JobContext]]转换为多个[[Config]]，每个[[Task]]依赖[[Config]]执行一次
   *
   * =任务启动=
   * 统一Main方法入口 [[NornsMain]]
   *
   * 简单示例参考 norns-job-examples 模块中 package com.gourd.norns.examples.core 内容
+  *
+  * =编码建议=
+  * - scala 常用函数式编程，习惯了 def 定义容易，对于资源初始化变量定义为 def（函数），导致多次引用时多次初始化
+  * 例如将job中 Job.jc 定义为函数后多次引用时出现多次初始化问题，因添加为私有变量后方法返回，必要时支持 lazy
   *
   * @author Li.Wei by 2019/8/29
   */
@@ -86,33 +90,27 @@ case class EmptyJobContext() extends JobContext
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 trait MultiJob extends Job {
 
-  type TC <: TaskContext
-
   /** 默认执行子任务 , 默认为空 */
-  def defaultTasks: Seq[Task[JC, TC]] = Seq.empty
+  def defaultTasks: Seq[Task[JC]] = Seq.empty
 
   /** 默认执行子任务 + 反射配置文件指定子任务类名 */
-  protected def tasks: Seq[Task[JC, TC]] = defaultTasks ++ {
+  private lazy val _tasks: Seq[Task[JC]] = defaultTasks ++ {
     if (jc.config.hasPathOrNull(jobRunTasks)) {
       val list = jc.config.getStringList(jobRunTasks)
       import scala.collection.JavaConverters._
-      list.asScala.map(Class.forName(_).getConstructor().newInstance().asInstanceOf[Task[JC, TC]])
-    } else Seq[Task[JC, TC]]()
+      list.asScala.map(Class.forName(_).getConstructor().newInstance().asInstanceOf[Task[JC]])
+    } else Seq.empty
   }
 
-  def contextConvert: JC => Seq[TC]
+  def contextConvert: JC => Seq[Config]
 
-  override def run(): Unit = contextConvert(jc).foreach((tc: TC) => tasks.foreach(_.run(jc, tc)))
+  override def run(): Unit = contextConvert(jc).foreach(tc => _tasks.foreach(_.run(jc, tc)))
 }
 
-trait Task[JC <: JobContext, TC <: TaskContext] extends Logging {
+trait Task[JC <: JobContext] extends Logging {
 
-  def run(jc: JC, tc: TC): Unit
+  def run(jc: JC, tc: Config): Unit
 }
-
-trait TaskContext extends Context
-
-case class EmptyTaskContext() extends TaskContext
 
 trait PlugTask {
   type D
