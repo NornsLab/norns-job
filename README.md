@@ -50,6 +50,8 @@ class SingleSparkJobExample extends SparkJob {
 |[norns-job-flink(开发中)](./norns-job-flink)|flink-job|
 |[norns-job-examples](./norns-job-examples)|项目示例|
 
+# 计划
+- 配置内容支持动态替换context#data
 
 # 联系
 * QQ 群：348527861

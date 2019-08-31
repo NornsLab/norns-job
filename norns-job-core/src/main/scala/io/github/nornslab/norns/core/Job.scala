@@ -113,3 +113,73 @@ trait Task[JC <: JobContext, TC <: TaskContext] extends Logging {
 trait TaskContext extends Context
 
 case class EmptyTaskContext() extends TaskContext
+
+trait PlugTask {
+  type D
+
+  def inputPlug: Input[D]
+
+  def filterPlugs(): Array[Filter[D]] = Array.empty
+
+  def outputPlugs(): Array[Output[D]]
+
+  def run(): Unit = {
+    var d = inputPlug.input
+    filterPlugs().headOption
+    filterPlugs().map(f => {
+      d = f.filter(d)
+      d
+    })
+    outputPlugs().foreach(_.output(d))
+
+    // 推导为链式写法 待测试 多输出情况下提供cache操作(可用filter实现，具体根据输出out是否为多个自行定义) 提供并行写出操作
+    outputPlugs().foreach {
+      _.output(filterPlugs().foldLeft(inputPlug.input)((d, f) => f.filter(d)))
+    }
+  }
+
+}
+
+class PlugTaskTest extends PlugTask {
+  type D = Int
+
+  override def inputPlug: Input[Int] = new Input[Int] {
+    override def input: Int = 1
+  }
+
+  override def filterPlugs(): Array[Filter[Int]] = Array(
+    new Filter[Int] {
+      override def filter(d: Int): Int = d - 1
+    }, new Filter[Int] {
+      override def filter(d: Int): Int = d + 1
+    }, new Filter[Int] {
+      override def filter(d: Int): Int = d + 1
+    }
+  )
+
+  override def outputPlugs(): Array[Output[Int]] = Array(
+    new Output[Int] {
+      override def output(d: Int): Unit = println(s"out $d")
+    }
+  )
+}
+
+object PlugTaskTest {
+  def main(args: Array[String]): Unit = {
+    new PlugTaskTest().run()
+  }
+}
+
+trait Plug
+
+trait Input[D] extends Plug {
+  def input: D
+}
+
+trait Filter[D] extends Plug {
+  def filter(d: D): D
+}
+
+trait Output[D] extends Plug {
+  def output(d: D): Unit
+}

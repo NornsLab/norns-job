@@ -14,7 +14,7 @@ object Constant {
   val nornsCore = s"$norns.core"
 
   val renderOptions = ConfigRenderOptions.defaults
-    .setComments(false).setOriginComments(false).setFormatted(true).setJson(true)
+    .setComments(false).setOriginComments(false).setFormatted(true).setJson(false)
 
   val loadConfFile: Function[(Option[Config], String), Config] = {
     case (None, filePath) => parseResources(filePath)
