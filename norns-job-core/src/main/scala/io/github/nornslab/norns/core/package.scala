@@ -7,17 +7,17 @@ package io.github.nornslab.norns
   */
 package object core {
 
-  val nornsJob = s"${Constant.nornsCore}.core.job"
+  val nornsJob = s"norns.core.job"
 
   /** 读取 job 配置文件路径 */
-  val nornsJobConfig = s"${Constant.nornsCore}.core.jobConfig"
+  val nornsJobConfig = s"norns.core.jobConfig"
 
   /** 默认载入 job 配置文件 */
   val nornsJobConf = "norns-job.conf"
   val nornsJobJson = "norns-job.json"
   val nornsJobProperties = "norns-job.properties"
 
-  /** [[MultiJob ]]运行子任务类名配置 */
-  val jobRunTasks = s"${Constant.nornsCore}.core.jobRunTasks"
+  /** [[TaskJob ]]运行子任务类名配置 */
+  val jobRunTasks = s"norns.core.jobRunTasks"
 
 }

@@ -19,7 +19,7 @@ object Constant {
   val loadConfFile: Function[(Option[Config], String), Config] = {
     case (None, filePath) => parseResources(filePath)
     case (Some(c), filePathConfigKey) if c.hasPathOrNull(filePathConfigKey) =>
-      parseFile(new File(c.getString(filePathConfigKey)))
+      parseFile(new File(c.getString(filePathConfigKey))) // TODO file 获取失败后默认以resource方式获取
     case _ => empty()
   }
 }
