@@ -39,7 +39,7 @@ allprojects {
 
     apply plugin: 'idea'
     group 'com.gourd'
-    version '1.0-SNAPSHOT'
+    version '0.1'
 }
 
 

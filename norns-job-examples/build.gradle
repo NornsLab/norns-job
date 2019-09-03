@@ -1,4 +1,3 @@
-
 dependencies {
     compile project(":norns-job-core")
     compile project(":norns-job-spark")

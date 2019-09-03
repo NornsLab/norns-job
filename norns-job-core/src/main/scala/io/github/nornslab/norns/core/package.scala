@@ -18,6 +18,11 @@ package object core {
   val nornsJobProperties = "norns-job.properties"
 
   /** [[TaskJob ]]运行子任务类名配置 */
-  val jobRunTasks = s"norns.core.jobRunTasks"
+  val runTasks = "norns.runTasks"
+  val className = "className"
+
+  val input = "input"
+  val filter = "filter"
+  val output = "output"
 
 }

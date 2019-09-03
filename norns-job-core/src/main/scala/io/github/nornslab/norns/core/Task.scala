@@ -8,7 +8,9 @@ import io.github.nornslab.norns.core.utils.Logging
 trait Task[TC <: TaskContext] extends Logging {
   def name: String = getClass.getCanonicalName
 
-  def run(tc: TC): Unit
+  def tc: TC
+
+  def run(): Unit
 }
 
 trait PlugTask[TC <: TaskContext, D] extends Task[TC] {
@@ -19,7 +21,7 @@ trait PlugTask[TC <: TaskContext, D] extends Task[TC] {
 
   def outputPlugs(): Array[Output[TC, D]]
 
-  override def run(tc: TC): Unit = {
+  override def run(): Unit = {
     // 推导为链式写法 待测试 多输出情况下提供cache操作(可用filter实现，具体根据输出out是否为多个自行定义) 提供并行写出操作
     outputPlugs().foreach {
       _.output(tc, filterPlugs().foldLeft(inputPlug.input(tc))((d, f) => f.filter(tc, d)))

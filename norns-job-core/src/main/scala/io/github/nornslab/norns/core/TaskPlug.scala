@@ -9,15 +9,15 @@ package io.github.nornslab.norns.core
 trait TaskPlug[TC <: TaskContext, D]
 
 trait Input[TC <: TaskContext, D] extends TaskPlug[TC, D] {
-  def input(tc: TaskContext): D
+  def input(tc: TC): D
 }
 
 trait Filter[TC <: TaskContext, D] extends TaskPlug[TC, D] {
-  def filter(tc: TaskContext, d: D): D
+  def filter(tc: TC, d: D): D
 }
 
 trait Output[TC <: TaskContext, D] extends TaskPlug[TC, D] {
-  def output(tc: TaskContext, d: D): Unit
+  def output(tc: TC, d: D): Unit
 }
 
 
@@ -25,6 +25,7 @@ trait Output[TC <: TaskContext, D] extends TaskPlug[TC, D] {
 // FOR TEST
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/*
 class PlugTaskTest extends PlugTask[TaskContext, Int] {
 
   override def inputPlug: Input[TaskContext, Int] = new Input[TaskContext, Int] {
@@ -50,7 +51,8 @@ class PlugTaskTest extends PlugTask[TaskContext, Int] {
 
 object PlugTaskTest {
   def main(args: Array[String]): Unit = {
-    new PlugTaskTest().run(new TaskContext() {})
+    // new PlugTaskTest().run(new TaskContext() {})
   }
 }
 
+*/

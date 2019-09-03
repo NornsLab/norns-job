@@ -11,7 +11,7 @@ import scala.collection.JavaConverters._
   */
 trait SparkJob extends Job {
 
-  override type JC = SparkJobContext
+  override type JC = SJC
 
   private lazy val _jc: JC = new JC(
     Map(
@@ -47,4 +47,10 @@ class SparkJobContext(val sparkConfSetting: Traversable[(String, String)] = Map.
     _sSession.stop()
     _sc.stop()
   }
+}
+
+object SparkJobContext {
+
+  def sql(sqlStr: String)(implicit sjc: SJC): DataFrame = sjc.sparkSession.sql(sqlStr)
+
 }
