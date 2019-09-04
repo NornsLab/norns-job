@@ -1,18 +1,18 @@
 package io.github.nornslab.norns.core
 
-/**
-  * 如果未配置 taskClassName 默认按[[PlugTask]]创建匿名类进行启动
+import com.typesafe.config.Config
+
+/** 参考[[Job]] 注释声明
   *
   * @author Li.Wei by 2019/9/2
   */
-trait TaskJob {
-  self: Job =>
+trait TaskJob extends Job {
+  // self: Job =>
 
-  type TC <: TaskContext
-
-  type T <: Task[TC]
-
-  def tasks: Seq[T]
+  /**
+    * @return 运行 Task 类型
+    */
+  def tasks: Seq[Class[_]]
 
   /* if (jc.config.hasPathOrNull(runTasks)) {
     val list = jc.config.getConfigList(runTasks)
@@ -35,14 +35,18 @@ trait TaskJob {
     })
   } else Seq[T]() */
 
-  def contextConvert: JC => Seq[TC]
+  /** job context 转换为多个 task 依赖上下文环境 ，每个 task 依赖上下文环境将被 task执行一次 */
+  def contextConvert: C => Seq[(C, Config)]
 
-  override def run(): Unit = {
-    for {
-      tc <- contextConvert(jc)
+  override def start(): Unit = {
+    val runTasks: Seq[Task[C]] = for {
+      tc <- contextConvert(context)
       t <- tasks
-    } yield t.run()
+    } yield t.getConstructor(classOf[(C, Config)]).newInstance(tc).asInstanceOf[Task[C]] // todo 反射时区分task、PlugTask
 
-    // contextConvert(jc).foreach(tc => tasks.foreach(_.run(tc)))
+    runTasks.foreach(t => {
+      t.init().start()
+      t.stop()
+    })
   }
 }

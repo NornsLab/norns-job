@@ -1,21 +1,20 @@
 package io.github.nornslab.norns.core
 
-import com.typesafe.config.Config
-import io.github.nornslab.norns.core.utils.Logging
-
-/** 任务入口
+/** 工作
   *
-  * =任务运行模式支持=
-  * [[Job]] ：单个任务运行
-  * [[TaskJob]]  ：多子任务[[Task]]组合为一个任务运行
+  * =工作运行模式支持=
+  * [[Job]]       ：单个工作运行
+  * [[TaskJob]]   ：多子任务[[Task]]组合为一个工作运行
   *
   * =[[Context]]上下文环境说明=
   * [[Job]]       运行时依赖参数封装为[[JobContext]]，同时默认装载配置信息[[JobContext.config]]
-  * [[Task]]      运行时依赖参数封装为[[TaskContext]]
-  * 对于[[TaskJob]]模式任务，支持将 [[JobContext]]转换为多个[[Config]]，每个[[Task]]依赖[[Config]]执行一次
+  * [[Task]]      运行时依赖参数封装为二元组 ([[JobContext]],Config) Config为每个task实例单独依赖配置信息封装
+  *
+  * =[[TaskJob]]=
+  * 对于[[TaskJob]]模式任务，支持将 [[JobContext]]转换为多个([[JobContext]],Config)，每个依赖执行一次
   * 配置信息参考 https://github.com/lightbend/config/blob/master/HOCON.md
   *
-  * =任务启动=
+  * =工作启动=
   * 统一Main方法入口 [[NornsMain]]
   *
   * 简单示例参考 norns-job-examples 模块中 package com.gourd.norns.examples.core 内容
@@ -26,33 +25,10 @@ import io.github.nornslab.norns.core.utils.Logging
   *
   * @author Li.Wei by 2019/8/29
   */
-trait Job extends Logging with AutoCloseable {
+trait Job extends Service {
 
-  type JC <: JobContext
+  override type C <: JobContext
 
-  /** 任务名称 */
-  def name: String = getClass.getCanonicalName
-
-  /** [[run()]] 执行前 初始化，打开资源等操作 */
-  def initialize(): this.type = {
-    info(jc.config.root().render(Constant.renderOptions))
-    this
-  }
-
-  /** job 上下文参数 */
-  def jc: JC
-
-  /** job 运行 */
-  def run(): Unit
-
-  /** job 运行结束资源关闭 */
-  override def close(): Unit = {
-    try {
-      jc.close()
-    } catch {
-      case e: Exception => error("jc.close error", e)
-    }
-  }
 }
 
 

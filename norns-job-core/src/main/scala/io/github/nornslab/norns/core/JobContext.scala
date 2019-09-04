@@ -1,7 +1,7 @@
 package io.github.nornslab.norns.core
 
 import com.typesafe.config.{Config, ConfigFactory}
-import io.github.nornslab.norns.core.utils.Logging
+import io.github.nornslab.norns.core.utils.{ConfigUtils, Logging}
 
 /**
   * @author Li.Wei by 2019/9/2
@@ -24,17 +24,16 @@ object JobContext extends Logging {
     val sysConf = ConfigFactory.empty()
       .withFallback(ConfigFactory.systemEnvironment)
       .withFallback(ConfigFactory.systemProperties)
-      .withOnlyPath(Constant.norns)
+      .withOnlyPath(ConfigKeys.norns)
 
     val r = sysConf
-      .withFallback(Constant.loadConfFile(None -> nornsJobConf))
-      .withFallback(Constant.loadConfFile(None -> nornsJobJson))
-      .withFallback(Constant.loadConfFile(None -> nornsJobProperties))
-      .withFallback(Constant.loadConfFile(Some(sysConf) -> nornsJobConfig))
+      .withFallback(ConfigUtils.loadConfFile(None -> nornsJobConf))
+      .withFallback(ConfigUtils.loadConfFile(None -> nornsJobJson))
+      .withFallback(ConfigUtils.loadConfFile(None -> nornsJobProperties))
+      .withFallback(ConfigUtils.loadConfFile(Some(sysConf) -> nornsJobConfig))
     // info(r.root().render(Constant.renderOptions)) // log
     r
   }
 }
-
 
 case class EmptyJobContext() extends JobContext

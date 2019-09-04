@@ -9,10 +9,10 @@ import org.apache.spark.sql.{Dataset, Row}
 package object spark {
 
   type SJC = SparkJobContext
-  type STC = SparkTaskContext
+  // type STC = SparkTaskContext
 
-  type SpInput = Input[STC, Dataset[Row]]
-  type SpFilter = Filter[STC, Dataset[Row]]
-  type SpOutput = Output[STC, Dataset[Row]]
+  type SpInput = Input[SJC, Dataset[Row]]
+  type SpFilter = Filter[SJC, Dataset[Row]]
+  type SpOutput = Output[SJC, Dataset[Row]]
 
 }

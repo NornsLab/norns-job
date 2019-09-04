@@ -15,13 +15,13 @@ class SingleJobExampleContext extends JobContext {
 
 class SingleJobExample extends Job {
 
-  override type JC = SingleJobExampleContext
+  override type C = SingleJobExampleContext
 
-  private val _jc = new JC
+  private val _jc = new C
 
-  override def jc: JC = _jc
+  override def context: C = _jc
 
   /** job 运行 */
-  override def run(): Unit = info(s"$name running... context.foo=${jc.foo}...")
+  override def start(): Unit = info(s"$name running... context.foo=${context.foo}...")
 }
 

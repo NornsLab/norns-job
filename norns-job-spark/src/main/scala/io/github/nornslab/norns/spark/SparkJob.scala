@@ -1,6 +1,7 @@
 package io.github.nornslab.norns.spark
 
-import io.github.nornslab.norns.core.{Constant, Job, JobContext}
+import io.github.nornslab.norns.core.utils.ConfigUtils
+import io.github.nornslab.norns.core.{Job, JobContext}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.{SparkConf, SparkContext}
 
@@ -11,45 +12,58 @@ import scala.collection.JavaConverters._
   */
 trait SparkJob extends Job {
 
-  override type JC = SJC
+  override type C = SJC
 
-  private lazy val _jc: JC = new JC(
+  private lazy val _jc: C = new C(
     Map(
-      "spark.app.name" -> this.getClass.getName,
+      "spark.app.name" -> name,
       "spark.master" -> "local"
     )
   )
 
-  implicit override def jc: JC = _jc
+  override def context: C = _jc
 
-  def sql(sql: String)(implicit a: JC): DataFrame = a.sparkSession.sql(sql)
+  def sql(sql: String)(implicit a: C): DataFrame = a.sparkSession.sql(sql)
 }
 
+/**
+  * 封装 spark-job依赖 spark 相关对象信息
+  *
+  * @param sparkConfSetting 扩展sparkConf配置信息
+  */
 class SparkJobContext(val sparkConfSetting: Traversable[(String, String)] = Map.empty) extends JobContext {
 
   private val _sparkConf: SparkConf = buildSparkConf()
   private val _sc: SparkContext = SparkContext.getOrCreate(_sparkConf)
   private val _sSession: SparkSession = SparkSession.builder.config(_sparkConf).enableHiveSupport.getOrCreate
 
+  /**
+    * sparkConf 加载顺序
+    * norns.spark-default.conf -> JobContext.config 中 key=spark 配置信息 -> sparkConfSetting
+    *
+    * @return SparkConf
+    */
   def buildSparkConf(): SparkConf = new SparkConf()
-    .setAll(Constant.loadConfFile(Some(config) -> "norns.spark-default.conf").entrySet().asScala
+    .setAll(ConfigUtils.loadConfFile(Some(config) -> "norns.spark-default.conf").entrySet().asScala
       .map(f => f.getKey -> f.getValue.toString).toMap
     )
     .setAll(config.withOnlyPath("norns.spark").entrySet().asScala.map(f => f.getKey -> f.getValue.toString).toMap)
     .setAll(sparkConfSetting)
 
-  implicit def sparkContext: SparkContext = _sc
+  def sparkContext: SparkContext = _sc
 
-  implicit def sparkSession: SparkSession = _sSession
+  def sparkSession: SparkSession = _sSession
 
   override def close(): Unit = {
     super.close()
-    _sSession.stop()
-    _sc.stop()
+    sparkSession.stop()
+    sparkContext.stop()
   }
 }
 
 object SparkJobContext {
+
+  // 与 SparkJobContext 相关常用方法定义 。 e.g sql 、 df ...
 
   def sql(sqlStr: String)(implicit sjc: SJC): DataFrame = sjc.sparkSession.sql(sqlStr)
 

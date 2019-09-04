@@ -1,58 +1,22 @@
 package io.github.nornslab.norns.core
 
-/** TaskPlug
+/** 任务插件
   *
-  * @tparam TC taskContext
-  * @tparam D  插件运行处理数据流类型
+  * @tparam C JobContext
+  * @tparam D 插件处理流程依赖数据结构
   * @author Li.Wei by 2019/9/2
   */
-trait TaskPlug[TC <: TaskContext, D]
+trait TaskPlug[C <: JobContext, D]
 
-trait Input[TC <: TaskContext, D] extends TaskPlug[TC, D] {
-  def input(tc: TC): D
+trait Input[C <: JobContext, D] extends TaskPlug[C, D] {
+  def input(tc: C): D
 }
 
-trait Filter[TC <: TaskContext, D] extends TaskPlug[TC, D] {
-  def filter(tc: TC, d: D): D
+trait Filter[C <: JobContext, D] extends TaskPlug[C, D] {
+  def filter(tc: C, d: D): D
 }
 
-trait Output[TC <: TaskContext, D] extends TaskPlug[TC, D] {
-  def output(tc: TC, d: D): Unit
+trait Output[C <: JobContext, D] extends TaskPlug[C, D] {
+  def output(tc: C, d: D): Unit
 }
 
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-// FOR TEST
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/*
-class PlugTaskTest extends PlugTask[TaskContext, Int] {
-
-  override def inputPlug: Input[TaskContext, Int] = new Input[TaskContext, Int] {
-    override def input(c: TaskContext): Int = 1
-  }
-
-  override def filterPlugs(): Array[Filter[TaskContext, Int]] = Array(
-    new Filter[TaskContext, Int] {
-      override def filter(c: TaskContext, d: Int): Int = d - 1
-    }, new Filter[TaskContext, Int] {
-      override def filter(c: TaskContext, d: Int): Int = d + 1
-    }, new Filter[TaskContext, Int] {
-      override def filter(c: TaskContext, d: Int): Int = d + 1
-    }
-  )
-
-  override def outputPlugs(): Array[Output[TaskContext, Int]] = Array(
-    new Output[TaskContext, Int] {
-      override def output(c: TaskContext, d: Int): Unit = println(s"out $d")
-    }
-  )
-}
-
-object PlugTaskTest {
-  def main(args: Array[String]): Unit = {
-    // new PlugTaskTest().run(new TaskContext() {})
-  }
-}
-
-*/

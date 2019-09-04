@@ -1,3 +1,4 @@
+/*
 package io.github.nornslab.norns.examples.core
 
 import com.typesafe.config.{Config, ConfigFactory}
@@ -69,4 +70,4 @@ class Std extends Output[ExampleTaskContext, Int] {
   override def output(tc: ExampleTaskContext, d: Int): Unit = {
     println("Std = d" + d)
   }
-}
+} */

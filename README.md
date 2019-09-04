@@ -48,7 +48,7 @@ class SingleSparkJobExample extends SparkJob {
 |[norns-job-core](./norns-job-core)|核心功能接口封装|
 |[norns-job-spark(开发中)](./norns-job-spark)|spark-job|
 |[norns-job-flink(开发中)](./norns-job-flink)|flink-job|
-|[norns-job-examples](./norns-job-examples)|项目示例|
+|[norns-job-examples](./norns-job-examples)|示例代码|
 
 # 计划
 - 配置内容支持动态替换context#data

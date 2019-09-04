@@ -1,30 +1,27 @@
 package io.github.nornslab.norns.examples.spark
 
-import io.github.nornslab.norns.spark.SparkJobContext._
+import com.typesafe.config.{Config, ConfigFactory}
+import io.github.nornslab.norns.core.NornsMain
 import io.github.nornslab.norns.spark._
 
-class SparkTaskJobExample(private val _stc: STC) extends SparkTaskJob {
 
-  private implicit val context: STC = SparkTaskContext(jc)
-
-  override def tasks: Seq[SparkTask] =
-    Seq(
-      new SparkTask() {
-        override def run(): Unit = {
-          // code...
-        }
-      }
-    )
+object SparkTaskJobExample {
+  def main(args: Array[String]): Unit = NornsMain.work(classOf[SparkTaskJobExample])
 }
 
-class SparkTaskNumber(implicit override val tc: STC) extends SparkTask {
+class SparkTaskJobExample extends SparkTaskJob {
 
-  implicit def im(stc: STC): SJC = stc.jc
+  def tasks: Seq[Class[_]] = Seq(
+    classOf[SparkTaskNumber], classOf[SparkTaskNumber]
+  )
 
-  // implicit tc: SparkTaskContext
-  override def run(): Unit = {
-    sql("")
+  override def contextConvert: C => Seq[(C, Config)] = sj => Seq(sj -> ConfigFactory.empty)
+
+}
+
+class SparkTaskNumber(private implicit val _tc: (SJC, Config)) extends SparkTask {
+  override def start(): Unit = {
+    context.sparkContext.parallelize(1 to 10).foreach(println(_))
   }
-
 }
 

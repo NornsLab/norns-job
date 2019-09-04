@@ -1,25 +1,25 @@
 package io.github.nornslab.norns.spark
 
+import com.typesafe.config.Config
 import io.github.nornslab.norns.core._
 import org.apache.spark.sql.{Dataset, Row}
 
 /**
   * @author Li.Wei by 2019/9/3
   */
-case class SparkTask(implicit val tc: STC) extends Task[STC] {
+case class SparkTask(private implicit val _tc: (SJC, Config))
+  extends BaseTask[SJC] {
 
-  implicit final val jc: SJC = tc.jc
-
-  override def run(): Unit = {}
+  override def start(): Unit = {} // 默认实现
 }
 
-abstract class SparkPlugTask(implicit override val tc: STC)
-  extends SparkTask
-    with PlugTask[STC, Dataset[Row]] {
 
-  override def inputPlug: SpInput
+class SparkPlugTask(private implicit val _tc: (SJC, Config),
+                    private implicit val _inputPlug: SpInput,
+                    private implicit val _filterPlugs: Array[SpFilter],
+                    private implicit val _outputPlugs: Array[SpOutput])
+  extends BasePlugTask[SJC, Dataset[Row]]
 
-  override def filterPlugs(): Array[SpFilter] = Array.empty
 
-  override def outputPlugs(): Array[SpOutput]
-}
+
+
