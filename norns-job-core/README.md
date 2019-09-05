@@ -3,5 +3,5 @@
 ## 设计说明
 job-core Class Dependency Analyzer [by CDA 2.2.0](http://www.dependency-analyzer.org/)
 
-![norns-job-core.CDA.png](./docs/design/norns-job-core.CDA.jpg)
+![norns-job-core.CDA.png](./docs/design/norns-job-core.CDA.png)
 
