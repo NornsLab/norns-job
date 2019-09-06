@@ -1,6 +1,6 @@
 #!/bin/sh
 
-CDA_HOME=`dirname $0`
+CDA_HOME=$(dirname $0)
 export CDA_HOME
 
 LCP=$CDA_HOME/config:$CDA_HOME/lib/*:$CDA_HOME/lib/ext/*
@@ -15,26 +15,24 @@ export LCP
 JVM_OPTS=-Xmx512M
 export JVM_OPTS
 
-execCDA()
-{
-	export JHOME
-	$JHOME/bin/java $JVM_OPTS -cp $LCP org.pfsw.tools.cda.CDATool $*
+execCDA() {
+  export JHOME
+  $JHOME/bin/java $JVM_OPTS -cp $LCP org.pfsw.tools.cda.CDATool $*
 }
 
-error1()
-{
- 	echo ====================================================
- 	echo Error: JRE_HOME and JAVA_HOME not found !
-	echo Set the JRE_HOME or the JAVA_HOME path variable !
-	echo ====================================================
+error1() {
+  echo ====================================================
+  echo Error: JRE_HOME and JAVA_HOME not found !
+  echo Set the JRE_HOME or the JAVA_HOME path variable !
+  echo ====================================================
 }
 
-if [ $JRE_HOME ] ; then
- 		JHOME=$JRE_HOME
-		execCDA $*
-	elif [ $JAVA_HOME ] ; then
-  	JHOME=$JAVA_HOME
-		execCDA $*
+if [ $JRE_HOME ]; then
+  JHOME=$JRE_HOME
+  execCDA $*
+elif [ $JAVA_HOME ]; then
+  JHOME=$JAVA_HOME
+  execCDA $*
 else
-		error1
+  error1
 fi

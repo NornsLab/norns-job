@@ -1,7 +1,7 @@
 package io.github.nornslab.norns.examples.spark
 
 import com.typesafe.config.Config
-import io.github.nornslab.norns.core.NornsMain
+import io.github.nornslab.norns.core.{NornsMain, Task}
 import io.github.nornslab.norns.spark.plugins.SparkInput
 import io.github.nornslab.norns.spark.plugins.output.Stdout
 import io.github.nornslab.norns.spark.{SJC, SparkPluginTask, SparkTaskJob}
@@ -14,7 +14,7 @@ object SparkPluginTaskExample {
 }
 
 class SparkPluginTaskExample extends SparkTaskJob {
-  override def tasks: Seq[Class[_]] = Seq(classOf[SparkFile])
+  override def runningTasks(implicit tc: (C, Config)): Seq[Task] = Seq(new SparkFile())
 }
 
 class SparkFile(override implicit val tc: (SJC, Config)) extends SparkPluginTask {

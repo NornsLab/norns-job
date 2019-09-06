@@ -1,7 +1,7 @@
 package io.github.nornslab.norns.examples.spark
 
 import com.typesafe.config.Config
-import io.github.nornslab.norns.core.NornsMain
+import io.github.nornslab.norns.core.{NornsMain, Task}
 import io.github.nornslab.norns.spark._
 
 
@@ -11,8 +11,8 @@ object SparkTaskJobExample {
 
 class SparkTaskJobExample extends SparkTaskJob {
 
-  override def tasks: Seq[Class[_]] = Seq(
-    classOf[SparkTaskNumber], classOf[SparkTaskNumber]
+  override def runningTasks(implicit tc: (C, Config)): Seq[Task] = Seq(
+    new SparkTaskNumber()
   )
 
 }

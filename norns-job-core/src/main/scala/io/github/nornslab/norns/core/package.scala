@@ -44,7 +44,7 @@ package object core {
   val nornsJobProperties = "norns-job.properties"
 
   /** [[TaskJob ]]运行子任务类名配置 */
-  val runTasks = "norns.runTasks"
+  val tasks = "tasks"
   val className = "className"
 
   val input = "input"

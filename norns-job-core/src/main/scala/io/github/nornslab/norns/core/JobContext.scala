@@ -1,7 +1,7 @@
 package io.github.nornslab.norns.core
 
 import com.typesafe.config.{Config, ConfigFactory}
-import io.github.nornslab.norns.core.utils.ConfigUtils
+import io.github.nornslab.norns.core.utils.{ConfigUtils, Logging}
 
 /** Job Context
   * 默认加载配置信息
@@ -13,7 +13,7 @@ trait JobContext extends Context {
   def config: Config = JobContext.defaultLoadConfig
 }
 
-object JobContext {
+object JobContext extends Logging {
   /**
     * 为简化配置操作，不引用 main 函数传入 args参数，推荐使用系统参数（-D）或者配置文件
     * =配置装载顺序=
@@ -33,7 +33,7 @@ object JobContext {
       .withFallback(ConfigUtils.loadConfFile(None -> nornsJobJson))
       .withFallback(ConfigUtils.loadConfFile(None -> nornsJobProperties))
       .withFallback(ConfigUtils.loadConfFile(Some(sysConf) -> nornsJobConfig))
-    // info(r.root().render(Constant.renderOptions)) // log
+    info(r.root().render(ConfigUtils.renderOptions)) // log
     r
   }
 }
