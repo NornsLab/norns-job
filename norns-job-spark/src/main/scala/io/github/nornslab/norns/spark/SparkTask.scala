@@ -7,7 +7,7 @@ import org.apache.spark.sql.{Dataset, Row}
 /**
   * @author Li.Wei by 2019/9/3
   */
-case class SparkTask(implicit override val tc: (SJC, Config))
+class SparkTask(implicit override val tc: (SJC, Config))
   extends BaseTask[SJC] {
 
   override def start(): Unit = {} // 默认实现

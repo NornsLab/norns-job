@@ -13,7 +13,7 @@ trait JobContext extends Context {
   def config: Config = JobContext.defaultLoadConfig
 }
 
-object JobContext extends Logging {
+private object JobContext extends Logging {
   /**
     * 为简化配置操作，不引用 main 函数传入 args参数，推荐使用系统参数（-D）或者配置文件
     * =配置装载顺序=
@@ -33,7 +33,7 @@ object JobContext extends Logging {
       .withFallback(ConfigUtils.loadConfFile(None -> nornsJobJson))
       .withFallback(ConfigUtils.loadConfFile(None -> nornsJobProperties))
       .withFallback(ConfigUtils.loadConfFile(Some(sysConf) -> nornsJobConfig))
-    info(r.root().render(ConfigUtils.renderOptions)) // log
+    info(s"defaultLoadConfig=\n${r.root().render(ConfigUtils.renderOptions)}") // log
     r
   }
 }

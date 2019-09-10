@@ -8,6 +8,7 @@ trait Job extends Service {
 
   override type C <: JobContext
 
+  override def close(): Unit = context.close()
 }
 
 

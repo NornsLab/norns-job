@@ -14,7 +14,7 @@ trait SparkJob extends Job {
 
   override type C = SJC
 
-  private lazy val _jc: C = new C(
+  private val _jc: C = new C(
     Map(
       "spark.app.name" -> name,
       "spark.master" -> "local"

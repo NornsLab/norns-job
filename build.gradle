@@ -89,10 +89,11 @@ subprojects {
     }
 
     dependencies {
-        compile rootProject.ext.dependencies["slf4j-api"]
-        compile rootProject.ext.dependencies["logback-core"]
-        compile rootProject.ext.dependencies["logback-classic"]
-
+        // compile rootProject.ext.dependencies["slf4j-api"]
+        // compile rootProject.ext.dependencies["logback-core"]
+        // compile rootProject.ext.dependencies["logback-classic"]
+        compile rootProject.ext.dependencies["log4j"]
+        testCompile rootProject.ext.dependencies["slf4j-log4j12"]
         compile rootProject.ext.dependencies["scala-library"]
         compile rootProject.ext.dependencies["scala-compiler"]
         testImplementation rootProject.ext.dependencies["junit"]

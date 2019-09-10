@@ -8,7 +8,9 @@ import org.apache.spark.sql.{Dataset, Row}
 /**
   * @author Li.Wei by 2019/9/5
   */
-class Add(implicit override val tc: (SJC, Config)) extends SparkFilter {
+class Add(private implicit val _pluginInitConfig: Config,
+          private implicit val _tc: (SJC, Config))
+  extends SparkFilter {
 
   override def filter(d: Dataset[Row]): Dataset[Row] = d
 }

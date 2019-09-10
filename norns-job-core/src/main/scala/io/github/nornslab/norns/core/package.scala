@@ -36,7 +36,7 @@ package object core {
   val nornsJob = s"norns.core.job"
 
   /** 读取 job 配置文件路径 */
-  val nornsJobConfig = s"norns.core.jobConfig"
+  val nornsJobConfig = s"norns.job.config"
 
   /** 默认载入 job 配置文件 */
   val nornsJobConf = "norns-job.conf"
@@ -44,11 +44,13 @@ package object core {
   val nornsJobProperties = "norns-job.properties"
 
   /** [[TaskJob ]]运行子任务类名配置 */
-  val tasks = "tasks"
-  val className = "className"
+  val multipleTasks = "multipleTasks"
+  val taskClassName = "taskClassName"
 
   val input = "input"
   val filter = "filter"
   val output = "output"
+
+  val plugin = "plugin"
 
 }

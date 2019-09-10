@@ -8,7 +8,7 @@ object TaskJobExample extends Logging {
   def main(args: Array[String]): Unit = NornsMain.work(classOf[TaskJobExample])
 }
 
-class TaskJobExample extends TaskJob {
+class TaskJobExample extends BaseTaskJob {
   def loadApps: Seq[String] = Seq("1", "2", "3")
 
   override type C = EmptyJobContext

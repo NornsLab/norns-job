@@ -17,7 +17,7 @@ object NornsMain {
 
   implicit def ref(jobClass: Class[_]): Job = jobClass.getConstructor().newInstance().asInstanceOf[Job]
 
-  def work(jobClass: String): Unit = ref(jobClass).fastStart()
+  def work(jobClass: String): Unit = ref(jobClass).fastExecute()
 
-  def work(jobClass: Class[_]): Unit = ref(jobClass).fastStart()
+  def work(jobClass: Class[_]): Unit = ref(jobClass).fastExecute()
 }
