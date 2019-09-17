@@ -24,22 +24,31 @@ object ConfigUtils {
   val renderOptions = ConfigRenderOptions.defaults
     .setComments(false).setOriginComments(false).setFormatted(true).setJson(true)
 
-  def map(c: Config, path: String): Map[String, String] = if (c.hasPath(path)) {
+  def getMap(c: Config, path: String): Map[String, String] = if (c.hasPath(path)) {
     c.getConfig(path).entrySet().asScala.map(f => f.getKey -> f.getValue.unwrapped().toString).toMap
   } else Map.empty
 
   def render(c: Config): String = c.root().render(renderOptions)
 }
 
+/**
+  * 配置项
+  *
+  * @param key         配置项名称
+  * @param default     默认值，配置为 None 表示必填
+  * @param description 配置描述
+  */
 case class ConfigKey(key: String,
                      default: Option[_] = None,
                      description: String = "") {
 
+  // 默认校验方法
   @throws[ConfigException.Missing]
   @throws[ConfigException.WrongType]
   def check(c: Config): Unit = {
+    // val value: Any = default.get
+    // c.getAnyRef(key).isInstanceOf
     val r = c.getString(key)
-    println(s"$c , key:$key , r:$r")
   }
 
 }

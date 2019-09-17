@@ -4,7 +4,7 @@ import com.typesafe.config.{Config, ConfigFactory}
 import io.github.nornslab.norns.core.utils.ConfigUtils.emptyConfig
 import io.github.nornslab.norns.core.utils.{ConfigKey, ConfigUtils}
 
-import scala.util.Try
+import scala.util.{Failure, Try}
 
 /** 任务插件
   *
@@ -27,15 +27,15 @@ trait TaskPlugin extends Service {
 class BaseTaskPlugin[JC <: JobContext](private implicit val _pluginInitConfig: Config = emptyConfig,
                                        private implicit val _tc: (JC, Config))
   extends TaskPlugin {
+  self =>
 
   import scala.collection.JavaConverters._
 
-  /** 插件配置信息 = 初始化插件配置信息+默认配置信息（非必填默认进行配置填充） */
-  val pluginConfig: Config = {
-    val map = supportConfig.filter(_.default.isDefined).map(c => c.key -> c.default.get).toMap
-    val config = _pluginInitConfig.withFallback(ConfigFactory.parseMap(map.asJava))
-    info(s"$name config \n${ConfigUtils.render(config)}")
-    config
+  // 插件配置信息 = 初始化插件配置信息+默认配置信息（非必填默认进行配置填充）todo 覆盖问题待测试
+  val pluginConfig: Config = _pluginInitConfig.withFallback {
+    ConfigFactory.parseMap {
+      supportConfig.filter(_.default.isDefined).map(c => c.key -> c.default.get).toMap.asJava
+    }
   }
 
   // 插件运行依赖数据配置
@@ -46,9 +46,33 @@ class BaseTaskPlugin[JC <: JobContext](private implicit val _pluginInitConfig: C
   override def context: JC = _tc._1
 
   /** 取所有支持配置项中必填项进行配置项存在与否校验 */
-  override def init: Try[this.type] = Try {
-    supportConfig.filter(_.default.isEmpty).foreach(_.check(pluginConfig))
-    this
+  override def init: Option[Throwable] = {
+    info(
+      s"""$name
+         |pluginConfig=
+         |${ConfigUtils.render(pluginConfig)}
+         |dataConfig=
+         |${ConfigUtils.render(dataConfig)}""".stripMargin)
+
+    val exceptions = supportConfig
+      .filter(_.default.isEmpty)
+      .map(k => Try(k.check(pluginConfig)) match {
+        case Failure(exception) => Some(exception)
+        case _ => None
+      })
+      .filter(_.isDefined).map(_.get)
+
+    if (exceptions.isEmpty) None
+    else Some(
+      exceptions.fold[Throwable](new Exception(
+        s"""init $name error,
+           | pluginConfig =${ConfigUtils.render(pluginConfig)}
+           | supportConfig=$supportConfig
+            """.stripMargin))((e1: Throwable, e2: Throwable) => {
+        e1.addSuppressed(e2)
+        e1
+      })
+    )
   }
 
   /** 插件支持配置项 */

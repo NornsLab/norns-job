@@ -2,8 +2,6 @@ package io.github.nornslab.norns.core
 
 import com.typesafe.config.Config
 
-import scala.util.Try
-
 /** 任务
   *
   * C = Task 依赖当前 job 上下文环境
@@ -59,14 +57,15 @@ abstract class BasePluginTask[JC <: JobContext, PDT](implicit override val tc: (
     with PluginTask[PDT] {
   self =>
 
-
   /** 启动前初始化操作，参数校验、资源配置信息初始化等操作 */
-  override def init: Try[self.type] = Try {
-    self.input.init
-    self.filters.foreach(_.init)
-    self.outputs.foreach(_.init)
-    this
-  }
+  override def init: Option[Throwable] =
+    (Seq(self.input.init) ++ self.filters.map(_.init) ++ self.outputs.map(_.init))
+      .filter(_.isDefined)
+      .map(_.get)
+      .reduceOption((e1: Throwable, e2: Throwable) => {
+        e1.addSuppressed(e2)
+        e1
+      })
 
   override def start(): Unit = {
     // 推导为链式写法 待测试 多输出情况下提供cache操作(可用filter实现，具体根据输出out是否为多个自行定义) 提供并行写出操作

@@ -11,9 +11,7 @@ object SparkTaskJobExample {
 
 class SparkTaskJobExample extends SparkTaskJob {
 
-  override def runningTasks(implicit tc: (C, Config)): Seq[Task] = Seq(
-    new SparkTaskNumber()
-  )
+  override def runningTasks(implicit tc: (C, Config)): Seq[Task] = Seq(new SparkTaskNumber())
 
 }
 

@@ -20,7 +20,7 @@ class File(private implicit val _pluginInitConfig: Config,
   override def input: Dataset[Row] = {
     val path: String = s"""file://${pluginConfig.getString(FileConfigKeys.path.key)}"""
     val format: String = pluginConfig.getString(FileConfigKeys.format.key)
-    val options = ConfigUtils.map(pluginConfig, FileConfigKeys.options.key)
+    val options = ConfigUtils.getMap(pluginConfig, FileConfigKeys.options.key)
 
     val read = context.sparkSession.read.options(options)
 

@@ -5,7 +5,6 @@ import io.github.nornslab.norns.core.utils.ConfigUtils
 import io.github.nornslab.norns.core.utils.ReflectUtils.newInstance
 
 import scala.collection.JavaConverters._
-import scala.util.{Failure, Success, Try}
 
 /** TaskJob
   *
@@ -110,14 +109,11 @@ abstract class BaseTaskJob extends TaskJob {
   }
 
   /** 启动前初始化操作，参数校验、资源配置信息初始化等操作 */
-  override def init: Try[this.type] = Try {
-    tasks.foreach(f => {
-      f.init match {
-        case Failure(exception) => throw exception
-        case Success(value) => value
-      }
+  override def init: Option[Throwable] = {
+    tasks.map(_.init).filter(_.isDefined).map(_.get).reduceOption((e1: Throwable, e2: Throwable) => {
+      e1.addSuppressed(e2)
+      e1
     })
-    this
   }
 
   /**
@@ -127,7 +123,7 @@ abstract class BaseTaskJob extends TaskJob {
     *       tc <- tss
     *       t <- runningTasks(tc)
     *     } yield t
-    *     runTasks.foreach(_.fastExecute())
+    *     runTasks.foreach(_.fastStart())
     * }}}
     */
   override def start(): Unit = {
@@ -135,7 +131,7 @@ abstract class BaseTaskJob extends TaskJob {
 
     tasks.foreach(t => {
       info(s"ready for operation task [$t]")
-      t.fastExecute()
+      t.fastStart()
     })
   }
 }
