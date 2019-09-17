@@ -5,6 +5,7 @@ import io.github.nornslab.norns.core.utils.ConfigUtils
 import io.github.nornslab.norns.core.utils.ReflectUtils.newInstance
 
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 import scala.util.{Failure, Success, Try}
 
 /** TaskJob
@@ -13,7 +14,6 @@ import scala.util.{Failure, Success, Try}
   * 当前待执行 task 为 runningTasks
   * 当前待执行 taskContext 为 taskContexts
   * 即累计运行 task 为 runningTasks * taskContexts ，组合逻辑参考 start 方法
-  *
   * @author Li.Wei by 2019/9/2
   */
 trait TaskJob extends Job {
@@ -43,7 +43,6 @@ abstract class BaseTaskJob extends TaskJob {
     * =默认处理逻辑=
     * 如果配置信息中存在 [[multipleTasks]] 节点，则默认按多task模式进行实例化
     * 否则按单个 task 模式实例化
-    *
     * @return 运行 Task 实例
     */
   def runningTasks(implicit tc: (C, Config)): Seq[Task] =
@@ -59,7 +58,6 @@ abstract class BaseTaskJob extends TaskJob {
     *
     * =注意事项=
     * 反射初始化时，尽量使用 val 变量，而不是 def ，保证初始化过程中因配置错误快速失败
-    *
     * @param c  反射创建 task 配置信息
     * @param tc 创建依赖上下文环境
     * @return 实例化 task
@@ -110,14 +108,21 @@ abstract class BaseTaskJob extends TaskJob {
   }
 
   /** 启动前初始化操作，参数校验、资源配置信息初始化等操作 */
-  override def init: Try[this.type] = Try {
-    tasks.foreach(f => {
-      f.init match {
-        case Failure(exception) => throw exception
-        case Success(value) => value
-      }
+  override def init: Try[this.type] = {
+    val tryMap = mutable.HashMap[String, Boolean]()
+    tasks.foreach(t => {
+      val taskInit = t.init
+      tryMap.put(taskInit.toString, taskInit.isSuccess)
     })
-    this
+
+    var failMessage: String = null
+    for (elem <- tryMap.keySet) {
+      if (!tryMap(elem)) {
+        failMessage += s"$elem ;"
+      }
+    }
+    if (tryMap.values.toArray.contains(false)) Failure(new Exception(failMessage))
+    else Success(this)
   }
 
   /**
