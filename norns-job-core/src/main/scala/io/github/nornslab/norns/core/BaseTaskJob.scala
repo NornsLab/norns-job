@@ -1,41 +1,30 @@
 package io.github.nornslab.norns.core
 
 import com.typesafe.config.Config
+import io.github.nornslab.norns.core.api._
 import io.github.nornslab.norns.core.utils.ConfigUtils
 import io.github.nornslab.norns.core.utils.ReflectUtils.newInstance
 
 import scala.collection.JavaConverters._
 
-/** TaskJob
-  *
-  * =执行 task 逻辑=
-  * 当前待执行 task 为 runningTasks
-  * 当前待执行 taskContext 为 taskContexts
-  * 即累计运行 task 为 runningTasks * taskContexts ，组合逻辑参考 start 方法
+/**
+  * [[TaskJob]] 默认实现
   *
   * @author Li.Wei by 2019/9/2
   */
-trait TaskJob extends Job {
-
-  /** [[PluginTask]] 中各插件传递数据流类型 */
-  type PDT
-
-  /** 当前待运行 Task，如需指定具体需要执行实例，重写该方法即可 */
-  def runningTasks(implicit tc: (C, Config)): Seq[Task]
-
-  /** job context 转换为多个 task 依赖上下文环境 ，每个 task 依赖上下文环境将被 task执行一次 */
-  def taskContexts: Seq[(C, Config)]
-
-}
-
-// 默认实现
 abstract class BaseTaskJob extends TaskJob {
 
-  // 反射获取插件时，默认 TaskJob 包地址下plugins
+  // 反射获取插件时，默认 TaskJob 包地址下 plugins ,如需要重写该参数即可
   val pluginPackage: String = s"${this.getClass.getPackage.getName}.plugins"
   val pluginFilterPackage: String = s"$pluginPackage.filter"
   val pluginOutputPackage: String = s"$pluginPackage.output"
   val pluginInputPackage: String = s"$pluginPackage.input"
+
+  final def inputPackage(name: String): String = s"$pluginInputPackage.$name"
+
+  final def filterPackage(name: String): String = s"$pluginFilterPackage.$name"
+
+  final def outputPackage(name: String): String = s"$pluginOutputPackage.$name"
 
   /**
     * 当前待运行 Task，如需指定具体需要执行实例，重写该方法即可
@@ -63,31 +52,26 @@ abstract class BaseTaskJob extends TaskJob {
     * @param tc 创建依赖上下文环境
     * @return 实例化 task
     */
-  def reflectTask(c: Config)(implicit tc: (C, Config)): Task =
-    if (c.hasPathOrNull(taskClassName)) newInstance[C, BaseTask[C]](c.getString(taskClassName), tc)
-    else {
+  def reflectTask(c: Config)(implicit tc: (C, Config)): Task = {
+    info(s"reflectTask by config ----------------------------------------------\n${ConfigUtils.render(c)}")
+    if (c.hasPathOrNull(taskClassName)) {
+      newInstance[C, BaseTask[C]](c.getString(taskClassName), tc)
+    } else {
       if (!c.hasPath(input) || !c.hasPath(output)) {
-        throw new IllegalArgumentException("config reflectTask setting miss")
+        throw new IllegalArgumentException(s"config reflectTask setting [$input,$output]miss")
       } else {
         new BasePluginTask[C, PDT]() {
           private val _input = {
-            val config = c.getConfig(ConfigKeys.input)
-            val className = s"$pluginInputPackage.${config.getString(plugin)}"
-            newInstance[C, BaseInput[C, PDT]](className, config, tc)
+            val config = c.getConfig(CoreConfigKeys.input)
+            newInstance[C, BaseInput[C, PDT]](inputPackage(config.getString(plugin)), config, tc)
           }
 
           private val _filters = if (c.hasPath(filter)) c.getConfigList(filter).asScala
-            .map(f => {
-              val className = s"$pluginFilterPackage.${f.getString(plugin)}"
-              newInstance[C, BaseFilter[C, PDT]](className, f, tc)
-            })
+            .map(f => newInstance[C, BaseFilter[C, PDT]](filterPackage(f.getString(plugin)), f, tc))
           else Seq.empty
 
           private val _outputs = c.getConfigList(output).asScala
-            .map(f => {
-              val className = s"$pluginOutputPackage.${f.getString(plugin)}"
-              newInstance[C, BaseOutput[C, PDT]](className, f, tc)
-            })
+            .map(f => newInstance[C, BaseOutput[C, PDT]](outputPackage(f.getString(plugin)), f, tc))
 
           override def input: Input[PDT] = _input
 
@@ -97,24 +81,25 @@ abstract class BaseTaskJob extends TaskJob {
         }
       }
     }
+  }
 
   /** job context 转换为多个 task 依赖上下文环境 ，每个 task 依赖上下文环境将被 task执行一次 */
   def taskContexts: Seq[(C, Config)] = Seq(context -> ConfigUtils.emptyConfig)
 
-
+  // 待执行 task
   private[this] lazy val tasks: Seq[Task] = {
     val tss = taskContexts
     info(s"taskContexts size [${taskContexts.size}] , ${taskContexts.map(_._2)}")
+    info(s"build tasks...")
     tss.flatten(runningTasks(_))
   }
 
-  /** 启动前初始化操作，参数校验、资源配置信息初始化等操作 */
-  override def init: Option[Throwable] = {
-    tasks.map(_.init).filter(_.isDefined).map(_.get).reduceOption((e1: Throwable, e2: Throwable) => {
+  /** 对所有待执行的 task 执行校验，默认调用每个 task 自身的 init 方法 */
+  override def init: Option[Throwable] = tasks.map(_.init).filter(_.isDefined).map(_.get)
+    .reduceOption((e1: Throwable, e2: Throwable) => {
       e1.addSuppressed(e2)
       e1
     })
-  }
 
   /**
     * 组合运行逻辑可推导为 for 写法，但是由于 for 中延迟初始化问题，不能在初始化时快速失败退出

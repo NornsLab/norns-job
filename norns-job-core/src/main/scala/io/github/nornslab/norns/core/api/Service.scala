@@ -1,4 +1,4 @@
-package io.github.nornslab.norns.core
+package io.github.nornslab.norns.core.api
 
 import io.github.nornslab.norns.core.utils.Logging
 
@@ -33,8 +33,10 @@ trait Service extends Logging with AutoCloseable {
     try {
       init match {
         case Some(exception) =>
-          error(s"fastExecute error : e=${exception.getMessage}")
-          exception.getSuppressed.foreach(f => error(s"Suppressed : e=${f.getMessage}"))
+          error(
+            s"""fastExecute error msg=${exception.getMessage}
+               |Suppressed=${exception.getSuppressed.map(_.getMessage).mkString("\n")}
+               |""".stripMargin)
           exception.printStackTrace()
         case None => info("init succeed , service start")
           start()

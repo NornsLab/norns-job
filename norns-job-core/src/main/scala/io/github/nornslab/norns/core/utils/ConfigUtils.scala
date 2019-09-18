@@ -3,7 +3,7 @@ package io.github.nornslab.norns.core.utils
 import java.io.File
 
 import com.typesafe.config.ConfigFactory.{parseFile, parseResources}
-import com.typesafe.config.{Config, ConfigException, ConfigFactory, ConfigRenderOptions}
+import com.typesafe.config.{Config, ConfigFactory, ConfigRenderOptions}
 
 import scala.collection.JavaConverters._
 
@@ -31,24 +31,3 @@ object ConfigUtils {
   def render(c: Config): String = c.root().render(renderOptions)
 }
 
-/**
-  * 配置项
-  *
-  * @param key         配置项名称
-  * @param default     默认值，配置为 None 表示必填
-  * @param description 配置描述
-  */
-case class ConfigKey(key: String,
-                     default: Option[_] = None,
-                     description: String = "") {
-
-  // 默认校验方法
-  @throws[ConfigException.Missing]
-  @throws[ConfigException.WrongType]
-  def check(c: Config): Unit = {
-    // val value: Any = default.get
-    // c.getAnyRef(key).isInstanceOf
-    val r = c.getString(key)
-  }
-
-}

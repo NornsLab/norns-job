@@ -1,24 +1,13 @@
 package io.github.nornslab.norns.core
 
 import com.typesafe.config.Config
-
-/** 任务
-  *
-  * C = Task 依赖当前 job 上下文环境
-  *
-  * =说明=
-  * 请勿在 task 中关闭 context , context 关闭默认由 job 管理
-  *
-  * @author Li.Wei by 2019/9/2
-  */
-trait Task extends Service {
-  override type C <: JobContext
-}
+import io.github.nornslab.norns.core.api.{JobContext, PluginTask, Task}
 
 /** Task 任务基础类
   *
   * @param tc Task 依赖当前 job 上下文环境及配置信息
   * @tparam JC Task 依赖当前 job 上下文环境
+  * @author Li.Wei by 2019/9/2
   */
 class BaseTask[JC <: JobContext](implicit val tc: (JC, Config))
   extends Task {
@@ -29,20 +18,6 @@ class BaseTask[JC <: JobContext](implicit val tc: (JC, Config))
   implicit override def context: C = tc._1
 
   override def start(): Unit = {}
-}
-
-/** 插件式 Task 任务
-  * 多个 Plugin 返回需支持协变，默认为  Seq[Obj] 格式
-  *
-  * @tparam PDT 插件处理流程依赖数据结构
-  */
-trait PluginTask[PDT] extends Task {
-
-  def input: Input[PDT]
-
-  def filters: Seq[Filter[PDT]] = Seq.empty
-
-  def outputs: Seq[Output[PDT]]
 }
 
 

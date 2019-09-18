@@ -1,4 +1,4 @@
-package io.github.nornslab.norns.core
+package io.github.nornslab.norns.core.api
 
 import com.typesafe.config.Config
 import io.github.nornslab.norns.core.utils.Logging

@@ -1,16 +1,15 @@
 package io.github.nornslab.norns.core
 
 import com.typesafe.config.ConfigFactory.{empty, systemEnvironment, systemProperties}
+import io.github.nornslab.norns.core.api.Job
 
 /** @example java -jar Main -Dnorns.core.job=${job.className}
   * @author Li.Wei by 2019/8/30
   */
-object NornsMain {
+object NornsJob {
 
-  def main(args: Array[String]): Unit = {
-    work {
-      empty().withFallback(systemEnvironment).withFallback(systemProperties).getString(nornsJob)
-    }
+  def main(args: Array[String]): Unit = work {
+    empty().withFallback(systemEnvironment).withFallback(systemProperties).getString(nornsJob)
   }
 
   implicit def ref(jobClass: String): Job = ref(Class.forName(jobClass))

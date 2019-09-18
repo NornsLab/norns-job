@@ -1,7 +1,7 @@
 package io.github.nornslab.norns.spark
 
+import io.github.nornslab.norns.core.api.{Job, JobContext}
 import io.github.nornslab.norns.core.utils.ConfigUtils
-import io.github.nornslab.norns.core.{Job, JobContext}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.{SparkConf, SparkContext}
 

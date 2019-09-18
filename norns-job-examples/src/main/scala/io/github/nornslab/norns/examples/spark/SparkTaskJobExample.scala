@@ -1,12 +1,13 @@
 package io.github.nornslab.norns.examples.spark
 
 import com.typesafe.config.Config
-import io.github.nornslab.norns.core.{NornsMain, Task}
+import io.github.nornslab.norns.core.NornsJob
+import io.github.nornslab.norns.core.api.Task
 import io.github.nornslab.norns.spark._
 
 
 object SparkTaskJobExample {
-  def main(args: Array[String]): Unit = NornsMain.work(classOf[SparkTaskJobExample])
+  def main(args: Array[String]): Unit = NornsJob.work(classOf[SparkTaskJobExample])
 }
 
 class SparkTaskJobExample extends SparkTaskJob {

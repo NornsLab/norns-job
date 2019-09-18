@@ -4,7 +4,7 @@ package io.github.nornslab.norns.core
   *
   * @author Li.Wei by 2019/8/29
   */
-object ConfigKeys {
+object CoreConfigKeys {
 
   val norns = "norns"
   val job = "job"

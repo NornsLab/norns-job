@@ -3,9 +3,11 @@ package io.github.nornslab.norns.spark.plugins.input
 import java.util
 
 import com.typesafe.config.Config
-import io.github.nornslab.norns.core.utils.{ConfigKey, ConfigUtils}
+import io.github.nornslab.norns.core.ConfigKey
+import io.github.nornslab.norns.core.utils.ConfigUtils
 import io.github.nornslab.norns.spark.SJC
 import io.github.nornslab.norns.spark.plugins.SparkInput
+import io.github.nornslab.norns.spark.plugins.input.FileConfigKeys.{formatKey, optionsKey, pathKey}
 import org.apache.spark.sql.{Dataset, Row}
 
 /**
@@ -15,12 +17,12 @@ class File(private implicit val _pluginInitConfig: Config,
            private implicit val _tc: (SJC, Config))
   extends SparkInput {
 
-  override def supportConfig: Seq[ConfigKey] = Seq(FileConfigKeys.path, FileConfigKeys.format, FileConfigKeys.options)
+  override def supportConfig: Seq[ConfigKey] = Seq(pathKey, formatKey, optionsKey)
 
   override def input: Dataset[Row] = {
-    val path: String = s"""file://${pluginConfig.getString(FileConfigKeys.path.key)}"""
-    val format: String = pluginConfig.getString(FileConfigKeys.format.key)
-    val options = ConfigUtils.getMap(pluginConfig, FileConfigKeys.options.key)
+    val path: String = s"""file://${pluginConfig.getString(pathKey.key)}"""
+    val format: String = pluginConfig.getString(formatKey.key)
+    val options = ConfigUtils.getMap(pluginConfig, optionsKey.key)
 
     val read = context.sparkSession.read.options(options)
 
@@ -38,11 +40,11 @@ class File(private implicit val _pluginInitConfig: Config,
 /* ------------------------------------------------------------------------------------- *
    File 插件支持配置项
  * ------------------------------------------------------------------------------------- */
-object FileConfigKeys {
+private object FileConfigKeys {
 
-  val path = ConfigKey(key = "path", description = "file path")
-  val format = ConfigKey(key = "format", default = Some("json"))
-  val options = ConfigKey(key = "options", default = Some(new util.HashMap()))
+  val pathKey = ConfigKey(key = "path", description = "file path")
+  val formatKey = ConfigKey(key = "format", default = Some("json"))
+  val optionsKey = ConfigKey(key = "options", default = Some(new util.HashMap()))
 
 }
 

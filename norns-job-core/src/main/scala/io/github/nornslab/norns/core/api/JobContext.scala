@@ -1,19 +1,29 @@
-package io.github.nornslab.norns.core
+package io.github.nornslab.norns.core.api
 
 import com.typesafe.config.{Config, ConfigFactory}
+import io.github.nornslab.norns.core.CoreConfigKeys
 import io.github.nornslab.norns.core.utils.{ConfigUtils, Logging}
 
 /** Job Context
-  * 默认加载配置信息
   *
   * @author Li.Wei by 2019/9/2
   */
 trait JobContext extends Context {
 
+  // 默认加载配置信息
   def config: Config = JobContext.defaultLoadConfig
 }
 
-private object JobContext extends Logging {
+object JobContext extends Logging {
+
+  /** 读取 job 配置文件路径 */
+  val nornsJobConfig = s"norns.job.config"
+
+  /** 默认载入 job 配置文件 */
+  val nornsJobConf = "norns-job.conf"
+  val nornsJobJson = "norns-job.json"
+  val nornsJobProperties = "norns-job.properties"
+
   /**
     * 为简化配置操作，不引用 main 函数传入 args参数，推荐使用系统参数（-D）或者配置文件
     * =配置装载顺序=
@@ -26,16 +36,14 @@ private object JobContext extends Logging {
     val sysConf = ConfigFactory.empty()
       .withFallback(ConfigFactory.systemEnvironment)
       .withFallback(ConfigFactory.systemProperties)
-      .withOnlyPath(ConfigKeys.norns)
+      .withOnlyPath(CoreConfigKeys.norns)
 
     val r = sysConf
       .withFallback(ConfigUtils.loadConfFile(None -> nornsJobConf))
       .withFallback(ConfigUtils.loadConfFile(None -> nornsJobJson))
       .withFallback(ConfigUtils.loadConfFile(None -> nornsJobProperties))
       .withFallback(ConfigUtils.loadConfFile(Some(sysConf) -> nornsJobConfig))
-    info(s"defaultLoadConfig=\n${r.root().render(ConfigUtils.renderOptions)}") // log
+    info(s"JobContext defaultLoadConfig=\n${r.root().render(ConfigUtils.renderOptions)}")
     r
   }
 }
-
-case class EmptyJobContext() extends JobContext

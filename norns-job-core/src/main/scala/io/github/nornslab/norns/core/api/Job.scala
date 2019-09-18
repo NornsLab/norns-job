@@ -1,4 +1,4 @@
-package io.github.nornslab.norns.core
+package io.github.nornslab.norns.core.api
 
 /** 工作
   *
@@ -10,16 +10,3 @@ trait Job extends Service {
 
   override def close(): Unit = context.close()
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,6 +1,7 @@
 package io.github.nornslab.norns
 
 import io.github.nornslab.norns.core._
+import io.github.nornslab.norns.core.api._
 
 /**
   * =工作运行模式支持=
@@ -11,17 +12,17 @@ import io.github.nornslab.norns.core._
   * [[TaskJob]]   ：多子任务[[Task]]组合为一个工作运行
   *
   * =[[Context]]上下文环境说明=
-  * [[Job]]       运行时依赖参数封装为[[io.github.nornslab.norns.core.JobContext]]，同时默认装载配置信息
-  * [[Task]]      运行时依赖参数封装为二元组 ([[io.github.nornslab.norns.core.JobContext]],Config) Config为每个task实例单独依赖配置信息封装
+  * [[Job]]       运行时依赖参数封装为[[JobContext]]，同时默认装载配置信息
+  * [[Task]]      运行时依赖参数封装为二元组 ([[JobContext]],Config) Config为每个task实例单独依赖配置信息封装
   *
   * =[[TaskJob]]=
-  * 对于[[TaskJob]]模式任务，支持将 [[io.github.nornslab.norns.core.JobContext]]转换为多个(JobContext,Config)，每个依赖执行一次
+  * 对于[[TaskJob]]模式任务，支持将 [[JobContext]]转换为多个(JobContext,Config)，每个依赖执行一次
   * 配置信息参考 https://github.com/lightbend/config/blob/master/HOCON.md
   *
-  * =[[TaskPlugin]]=
+  * =[[Plugin]]=
   *
   * =工作启动=
-  * 统一Main方法入口 [[NornsMain]]
+  * 统一Main方法入口 [[NornsJob]]
   *
   * 简单示例参考 norns-job-examples 模块中 package com.gourd.norns.examples.core 内容
   *
@@ -34,14 +35,6 @@ import io.github.nornslab.norns.core._
 package object core {
 
   val nornsJob = s"norns.core.job"
-
-  /** 读取 job 配置文件路径 */
-  val nornsJobConfig = s"norns.job.config"
-
-  /** 默认载入 job 配置文件 */
-  val nornsJobConf = "norns-job.conf"
-  val nornsJobJson = "norns-job.json"
-  val nornsJobProperties = "norns-job.properties"
 
   /** [[TaskJob ]]运行子任务类名配置 */
   val multipleTasks = "multipleTasks"

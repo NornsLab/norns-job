@@ -5,7 +5,7 @@ import io.github.nornslab.norns.core.utils.Logging
 
 object TaskJobExample extends Logging {
 
-  def main(args: Array[String]): Unit = NornsMain.work(classOf[TaskJobExample])
+  def main(args: Array[String]): Unit = NornsJob.work(classOf[TaskJobExample])
 }
 
 class TaskJobExample extends BaseTaskJob {

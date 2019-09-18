@@ -1,7 +1,7 @@
 package io.github.nornslab.norns.examples.spark
 
 import com.typesafe.config.Config
-import io.github.nornslab.norns.core.NornsMain
+import io.github.nornslab.norns.core.NornsJob
 import io.github.nornslab.norns.spark.{SJC, SparkTask, SparkTaskJob}
 
 /**
@@ -12,7 +12,7 @@ object SparkRefPluginTaskExample {
     System.setProperty("norns.job.config",
       ClassLoader.getSystemResource("norns-taskJob-multipleTasks-examples.conf").getPath)
 
-    NornsMain.work(classOf[SparkTaskJob])
+    NornsJob.work(classOf[SparkTaskJob])
   }
 }
 
