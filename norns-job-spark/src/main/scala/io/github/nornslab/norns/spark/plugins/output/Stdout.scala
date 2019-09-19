@@ -1,23 +1,20 @@
 package io.github.nornslab.norns.spark.plugins.output
 
-import com.typesafe.config.Config
-import io.github.nornslab.norns.core.ConfigKey
+import io.github.nornslab.norns.core.api.{Configuration, PluginConfigSpec}
+import io.github.nornslab.norns.core.plugins.BaseOutput
 import io.github.nornslab.norns.spark.SJC
-import io.github.nornslab.norns.spark.plugins.SparkOutput
-import io.github.nornslab.norns.spark.plugins.output.StdoutConfigKeys.limitKey
 import org.apache.spark.sql.{Dataset, Row}
 
 /**
   * @author Li.Wei by 2019/9/5
   */
-class Stdout(private implicit val _pluginInitConfig: Config,
-             private implicit val _tc: (SJC, Config))
-  extends SparkOutput {
-  override def supportConfig: Seq[ConfigKey] = Seq(limitKey)
+class Stdout(override val pluginConfig: Configuration,
+             override val context: SJC,
+             override val data: Map[String, AnyRef])
+  extends BaseOutput[Dataset[Row]](pluginConfig, context, data) {
+  val limit = pluginConfig.get(StdoutPluginConfigSpec.limitConfigSpec).intValue()
 
   override def output(d: Dataset[Row]): Unit = {
-    val limit = pluginConfig.getInt(limitKey.key)
-
     d.collect().take(limit).foreach(println(_))
   }
 }
@@ -25,8 +22,7 @@ class Stdout(private implicit val _pluginInitConfig: Config,
 /* ------------------------------------------------------------------------------------- *
    Stdout 插件支持配置项
  * ------------------------------------------------------------------------------------- */
-private object StdoutConfigKeys {
+object StdoutPluginConfigSpec {
 
-  val limitKey = ConfigKey(key = "limit", default = Some(10), description = "limit N println")
-
+  val limitConfigSpec = PluginConfigSpec.number("limit", 10)
 }

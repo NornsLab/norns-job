@@ -1,7 +1,8 @@
 package io.github.nornslab.norns.core.utils
 
-import com.typesafe.config.Config
-import io.github.nornslab.norns.core.{BaseTask, BaseTaskPlugin}
+import io.github.nornslab.norns.core.api.base.BaseTask
+import io.github.nornslab.norns.core.api.{Configuration, Context}
+import io.github.nornslab.norns.core.plugins.BaseTaskPlugin
 
 /**
   * @author Li.Wei by 2019/9/9
@@ -17,30 +18,27 @@ object ReflectUtils {
   /** ref [[BaseTask]]
     *
     * @param className className
-    * @param tc        tc
-    * @tparam C tc 泛型
-    * @tparam T 返回数据结构
-    * @return T
+    * @param data      data
     */
-  def newInstance[C, T](className: String, tc: (C, Config)): T =
+  def newInstanceBaseTask(className: String,
+                          context: Context,
+                          data: Map[String, AnyRef]): BaseTask =
     Class.forName(className)
-      .getConstructor(tc.getClass)
-      .newInstance(tc)
-      .asInstanceOf[T]
+      .getConstructor(context.getClass, classOf[Map[String, AnyRef]])
+      .newInstance(context, data)
+      .asInstanceOf[BaseTask]
 
   /** ref [[BaseTaskPlugin]]
     *
-    * @param className    className
-    * @param pluginConfig pluginConfig
-    * @param tc           tc
-    * @tparam C tc 泛型
-    * @tparam T 返回数据结构
-    * @return T
+    * @return BaseTaskPlugin
     */
-  def newInstance[C, T](className: String, pluginConfig: Config, tc: (C, Config)): T =
+  def newInstanceBaseTaskPlugin[T](className: String,
+                                   pluginConfig: Configuration,
+                                   context: Context,
+                                   data: Map[String, AnyRef]): T =
     Class.forName(className)
-      .getConstructor(classOf[Config], tc.getClass)
-      .newInstance(pluginConfig, tc)
+      .getConstructor(classOf[Configuration], context.getClass, classOf[Map[String, AnyRef]])
+      .newInstance(pluginConfig, context, data)
       .asInstanceOf[T]
 
 }

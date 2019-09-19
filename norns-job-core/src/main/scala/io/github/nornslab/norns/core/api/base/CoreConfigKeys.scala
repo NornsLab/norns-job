@@ -1,10 +1,10 @@
-package io.github.nornslab.norns.core
+package io.github.nornslab.norns.core.api.base
 
 /** core.Config key
   *
   * @author Li.Wei by 2019/8/29
   */
-object CoreConfigKeys {
+private[core] object CoreConfigKeys {
 
   val norns = "norns"
   val job = "job"

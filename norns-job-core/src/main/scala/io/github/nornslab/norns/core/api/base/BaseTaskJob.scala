@@ -1,9 +1,9 @@
-package io.github.nornslab.norns.core
+package io.github.nornslab.norns.core.api.base
 
 import com.typesafe.config.Config
 import io.github.nornslab.norns.core.api._
 import io.github.nornslab.norns.core.utils.ConfigUtils
-import io.github.nornslab.norns.core.utils.ReflectUtils.newInstance
+import io.github.nornslab.norns.core.utils.ReflectUtils._
 
 import scala.collection.JavaConverters._
 
@@ -13,6 +13,9 @@ import scala.collection.JavaConverters._
   * @author Li.Wei by 2019/9/2
   */
 abstract class BaseTaskJob extends TaskJob {
+
+  /** [[PluginTask]] 中各插件传递数据流类型 */
+  type E
 
   // 反射获取插件时，默认 TaskJob 包地址下 plugins ,如需要重写该参数即可
   val pluginPackage: String = s"${this.getClass.getPackage.getName}.plugins"
@@ -34,10 +37,10 @@ abstract class BaseTaskJob extends TaskJob {
     *
     * @return 运行 Task 实例
     */
-  def runningTasks(implicit tc: (C, Config)): Seq[Task] =
+  def runningTasks(data: Map[String, AnyRef]): Seq[Task] =
     if (context.config.hasPathOrNull(multipleTasks)) { // 多任务配置
-      context.config.getConfigList(multipleTasks).asScala.map(reflectTask(_))
-    } else Seq(reflectTask(context.config))
+      context.config.getConfigList(multipleTasks).asScala.map(reflectTask(_, data))
+    } else Seq(reflectTask(context.config, data))
 
   /**
     * 根据配置文件反射创建 task
@@ -48,50 +51,53 @@ abstract class BaseTaskJob extends TaskJob {
     * =注意事项=
     * 反射初始化时，尽量使用 val 变量，而不是 def ，保证初始化过程中因配置错误快速失败
     *
-    * @param c  反射创建 task 配置信息
-    * @param tc 创建依赖上下文环境
+    * @param c    反射创建 task 配置信息
+    * @param data 创建依赖上下文环境
     * @return 实例化 task
     */
-  def reflectTask(c: Config)(implicit tc: (C, Config)): Task = {
+  private[this] def reflectTask(c: Config, data: Map[String, AnyRef]): Task = {
     info(s"reflectTask by config ----------------------------------------------\n${ConfigUtils.render(c)}")
     if (c.hasPathOrNull(taskClassName)) {
-      newInstance[C, BaseTask[C]](c.getString(taskClassName), tc)
+      newInstanceBaseTask(c.getString(taskClassName), context, data)
     } else {
       if (!c.hasPath(input) || !c.hasPath(output)) {
         throw new IllegalArgumentException(s"config reflectTask setting [$input,$output]miss")
       } else {
-        new BasePluginTask[C, PDT]() {
+        new BasePluginTask[E]() {
           private val _input = {
             val config = c.getConfig(CoreConfigKeys.input)
-            newInstance[C, BaseInput[C, PDT]](inputPackage(config.getString(plugin)), config, tc)
+            newInstanceBaseTaskPlugin[Input[E]](inputPackage(config.getString(plugin)),
+              new ConfigurationImpl(config), context, data)
           }
 
           private val _filters = if (c.hasPath(filter)) c.getConfigList(filter).asScala
-            .map(f => newInstance[C, BaseFilter[C, PDT]](filterPackage(f.getString(plugin)), f, tc))
+            .map(f => newInstanceBaseTaskPlugin[Filter[E]](filterPackage(f.getString(plugin)),
+              new ConfigurationImpl(f), context, data))
           else Seq.empty
 
           private val _outputs = c.getConfigList(output).asScala
-            .map(f => newInstance[C, BaseOutput[C, PDT]](outputPackage(f.getString(plugin)), f, tc))
+            .map(f => newInstanceBaseTaskPlugin[Output[E]](outputPackage(f.getString(plugin)),
+              new ConfigurationImpl(f), context, data))
 
-          override def input: Input[PDT] = _input
+          override def input: Input[E] = _input
 
-          override def filters: Seq[Filter[PDT]] = _filters
+          override def filters: Seq[Filter[E]] = _filters
 
-          override def outputs: Seq[Output[PDT]] = _outputs
+          override def outputs: Seq[Output[E]] = _outputs
         }
       }
     }
   }
 
   /** job context 转换为多个 task 依赖上下文环境 ，每个 task 依赖上下文环境将被 task执行一次 */
-  def taskContexts: Seq[(C, Config)] = Seq(context -> ConfigUtils.emptyConfig)
+  def taskData: Seq[Map[String, AnyRef]] = Seq(Map[String, AnyRef]())
 
   // 待执行 task
   private[this] lazy val tasks: Seq[Task] = {
-    val tss = taskContexts
-    info(s"taskContexts size [${taskContexts.size}] , ${taskContexts.map(_._2)}")
+    val tss = taskData
+    info(s"taskData size [${taskData.size}]")
     info(s"build tasks...")
-    tss.flatten(runningTasks(_))
+    tss.flatten(runningTasks)
   }
 
   /** 对所有待执行的 task 执行校验，默认调用每个 task 自身的 init 方法 */
@@ -105,8 +111,8 @@ abstract class BaseTaskJob extends TaskJob {
     * 组合运行逻辑可推导为 for 写法，但是由于 for 中延迟初始化问题，不能在初始化时快速失败退出
     * {{{
     *   val runTasks: Seq[Task] = for {
-    *       tc <- tss
-    *       t <- runningTasks(tc)
+    *       data <- tss
+    *       t <- runningTasks(data)
     *     } yield t
     *     runTasks.foreach(_.fastStart())
     * }}}

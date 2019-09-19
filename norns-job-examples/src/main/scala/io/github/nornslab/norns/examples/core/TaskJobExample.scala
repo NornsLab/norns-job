@@ -1,6 +1,7 @@
 package io.github.nornslab.norns.examples.core
 
 import io.github.nornslab.norns.core._
+import io.github.nornslab.norns.core.api.base.{BaseTaskJob, EmptyContext}
 import io.github.nornslab.norns.core.utils.Logging
 
 object TaskJobExample extends Logging {
@@ -11,7 +12,7 @@ object TaskJobExample extends Logging {
 class TaskJobExample extends BaseTaskJob {
   def loadApps: Seq[String] = Seq("1", "2", "3")
 
-  override type C = EmptyJobContext
+  override type C = EmptyContext
 
-  override def context: C = EmptyJobContext()
+  override def context: C = EmptyContext()
 }

@@ -2,30 +2,28 @@ package io.github.nornslab.norns.spark.plugins.input
 
 import java.util
 
-import com.typesafe.config.Config
-import io.github.nornslab.norns.core.ConfigKey
-import io.github.nornslab.norns.core.utils.ConfigUtils
+import io.github.nornslab.norns.core.api.{Configuration, Input, PluginConfigSpec}
+import io.github.nornslab.norns.core.plugins.input.BaseFile
 import io.github.nornslab.norns.spark.SJC
-import io.github.nornslab.norns.spark.plugins.SparkInput
-import io.github.nornslab.norns.spark.plugins.input.FileConfigKeys.{formatKey, optionsKey, pathKey}
+import io.github.nornslab.norns.spark.plugins.input.FilePluginConfigSpec.{formatConfigSpec, optionsConfigSpec, pathConfigSpec}
 import org.apache.spark.sql.{Dataset, Row}
 
 /**
   * @author Li.Wei by 2019/9/5
   */
-class File(private implicit val _pluginInitConfig: Config,
-           private implicit val _tc: (SJC, Config))
-  extends SparkInput {
+class File(override val pluginConfig: Configuration,
+           override val context: SJC,
+           override val data: Map[String, AnyRef])
+  extends BaseFile[Dataset[Row]](pluginConfig, context, data) with Input[Dataset[Row]] {
 
-  override def supportConfig: Seq[ConfigKey] = Seq(pathKey, formatKey, optionsKey)
+  val path = s"""file://${pluginConfig.get(pathConfigSpec)}"""
+  val format = pluginConfig.get(formatConfigSpec)
+  val options = pluginConfig.get(optionsConfigSpec)
+
+  override def configSchema: Seq[PluginConfigSpec[_]] = Seq(pathConfigSpec, formatConfigSpec, optionsConfigSpec)
 
   override def input: Dataset[Row] = {
-    val path: String = s"""file://${pluginConfig.getString(pathKey.key)}"""
-    val format: String = pluginConfig.getString(formatKey.key)
-    val options = ConfigUtils.getMap(pluginConfig, optionsKey.key)
-
     val read = context.sparkSession.read.options(options)
-
     format match {
       case "text" => read.text(path).withColumnRenamed("value", "raw_message")
       case "parquet" => read.parquet(path)
@@ -40,11 +38,12 @@ class File(private implicit val _pluginInitConfig: Config,
 /* ------------------------------------------------------------------------------------- *
    File 插件支持配置项
  * ------------------------------------------------------------------------------------- */
-private object FileConfigKeys {
-
-  val pathKey = ConfigKey(key = "path", description = "file path")
-  val formatKey = ConfigKey(key = "format", default = Some("json"))
-  val optionsKey = ConfigKey(key = "options", default = Some(new util.HashMap()))
-
+private object FilePluginConfigSpec {
+  val pathConfigSpec = PluginConfigSpec.string("path")
+  val formatConfigSpec = PluginConfigSpec.string("format")
+  val optionsConfigSpec = PluginConfigSpec[util.HashMap[String, String]](
+    "options",
+    classOf[util.HashMap[String, String]],
+    Some(new util.HashMap())
+  )
 }
-

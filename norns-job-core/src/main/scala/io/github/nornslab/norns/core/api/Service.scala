@@ -10,11 +10,7 @@ import io.github.nornslab.norns.core.utils.Logging
   */
 trait Service extends Logging with AutoCloseable {
 
-  type C <: Context
-
   def name: String = getClass.getName
-
-  def context: C
 
   /** 启动前初始化操作，参数校验、资源配置信息初始化等操作 */
   def init: Option[Throwable] = None

@@ -1,6 +1,6 @@
 package io.github.nornslab.norns.spark
 
-import io.github.nornslab.norns.core.BaseTaskJob
+import io.github.nornslab.norns.core.api.base.BaseTaskJob
 import org.apache.spark.sql.{Dataset, Row}
 
 /**
@@ -8,6 +8,6 @@ import org.apache.spark.sql.{Dataset, Row}
   */
 class SparkTaskJob extends BaseTaskJob with SparkJob {
 
-  override type PDT = Dataset[Row]
+  override type E = Dataset[Row]
 
 }

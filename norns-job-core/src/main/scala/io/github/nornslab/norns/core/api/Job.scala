@@ -6,7 +6,9 @@ package io.github.nornslab.norns.core.api
   */
 trait Job extends Service {
 
-  override type C <: JobContext
+  type C <: Context
+
+  def context: C
 
   override def close(): Unit = context.close()
 }

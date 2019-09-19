@@ -7,6 +7,7 @@ import io.github.nornslab.norns.core.api.Job
   * @author Li.Wei by 2019/8/30
   */
 object NornsJob {
+  val nornsJob = s"norns.core.job"
 
   def main(args: Array[String]): Unit = work {
     empty().withFallback(systemEnvironment).withFallback(systemProperties).getString(nornsJob)

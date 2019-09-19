@@ -2,8 +2,10 @@ package io.github.nornslab.norns.core.api
 
 /** Input
   *
-  * @tparam TPD 插件处理流程依赖数据结构
+  * @tparam E 插件处理流程依赖数据结构
   */
-trait Input[TPD] extends Plugin {
-  def input: TPD
+trait Input[E] extends Plugin {
+
+  def input: E
+
 }

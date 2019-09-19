@@ -45,7 +45,7 @@ class SingleSparkJobExample extends SparkJob {
 ## 模块说明
 |模块|说明|
 |:---|:---|
-|[norns-job-core](./norns-job-core)|核心功能接口封装|
+|[norns-job-core(开发中)](./norns-job-core)|核心功能接口封装|
 |[norns-job-spark(开发中)](./norns-job-spark)|spark-job|
 |[norns-job-flink(开发中)](./norns-job-flink)|flink-job|
 |[norns-job-examples](./norns-job-examples)|示例代码|

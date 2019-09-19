@@ -1,7 +1,5 @@
 package io.github.nornslab.norns.core.api
 
-import com.typesafe.config.Config
-
 /** TaskJob
   *
   * =执行 task 逻辑=
@@ -13,13 +11,10 @@ import com.typesafe.config.Config
   */
 trait TaskJob extends Job {
 
-  /** [[PluginTask]] 中各插件传递数据流类型 */
-  type PDT
-
   /** 当前待运行 Task，如需指定具体需要执行实例，重写该方法即可 */
-  def runningTasks(implicit tc: (C, Config)): Seq[Task]
+  def runningTasks(data: Map[String, AnyRef]): Seq[Task]
 
   /** job context 转换为多个 task 依赖上下文环境 ，每个 task 依赖上下文环境将被 task执行一次 */
-  def taskContexts: Seq[(C, Config)]
+  def taskData: Seq[Map[String, AnyRef]]
 
 }

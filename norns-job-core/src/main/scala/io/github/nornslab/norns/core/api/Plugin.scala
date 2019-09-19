@@ -2,17 +2,16 @@ package io.github.nornslab.norns.core.api
 
 import java.util.UUID
 
-import com.typesafe.config.Config
+import io.github.nornslab.norns.core.utils.Logging
 
 /** 任务插件
   *
   * @author Li.Wei by 2019/9/2
   */
-trait Plugin extends Service {
+trait Plugin extends Logging {
 
-  // 插件配置信息
-  val pluginConfig: Config
+  def configSchema: Seq[PluginConfigSpec[_]]
 
-  def getId: String = UUID.randomUUID().toString
+  def id: String = UUID.randomUUID().toString
 
 }
