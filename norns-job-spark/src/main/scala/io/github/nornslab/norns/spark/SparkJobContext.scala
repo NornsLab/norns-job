@@ -1,7 +1,6 @@
 package io.github.nornslab.norns.spark
 
 import io.github.nornslab.norns.core.api.Context
-import io.github.nornslab.norns.core.utils.ConfigUtils
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.{SparkConf, SparkContext}
 
@@ -16,8 +15,6 @@ class SparkJobContext(val sparkConfSetting: Traversable[(String, String)] = Map.
   private val _sc: SparkContext = SparkContext.getOrCreate(_sparkConf)
   private val _sSession: SparkSession = SparkSession.builder.config(_sparkConf).enableHiveSupport.getOrCreate
 
-  import scala.collection.JavaConverters._
-
   /**
     * sparkConf 加载顺序
     * norns.spark-default.conf -> Context.config 中 key=spark 配置信息 -> sparkConfSetting
@@ -25,9 +22,9 @@ class SparkJobContext(val sparkConfSetting: Traversable[(String, String)] = Map.
     * @return SparkConf
     */
   def buildSparkConf(): SparkConf = new SparkConf()
-    .setAll(ConfigUtils.loadConfFile(Some(config) -> "norns.spark-default.conf").entrySet().asScala
-      .map(f => f.getKey -> f.getValue.toString).toMap)
-    .setAll(config.withOnlyPath("norns.spark").entrySet().asScala.map(f => f.getKey -> f.getValue.toString).toMap)
+    // .setAll(ConfigUtils.loadConfFile(Some(config) -> "norns.spark-default.conf").entrySet().asScala
+    // .map(f => f.getKey -> f.getValue.toString).toMap)
+    // .setAll(config.withOnlyPath("norns.spark").entrySet().asScala.map(f => f.getKey -> f.getValue.toString).toMap)
     .setAll(sparkConfSetting)
 
   def sparkContext: SparkContext = _sc

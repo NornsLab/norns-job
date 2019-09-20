@@ -1,11 +1,7 @@
 package io.github.nornslab.norns.core.api.base
 
-import com.typesafe.config.Config
 import io.github.nornslab.norns.core.api._
-import io.github.nornslab.norns.core.utils.ConfigUtils
 import io.github.nornslab.norns.core.utils.ReflectUtils._
-
-import scala.collection.JavaConverters._
 
 /**
   * [[TaskJob]] 默认实现
@@ -38,8 +34,8 @@ abstract class BaseTaskJob extends TaskJob {
     * @return 运行 Task 实例
     */
   def runningTasks(data: Map[String, AnyRef]): Seq[Task] =
-    if (context.config.hasPathOrNull(multipleTasks)) { // 多任务配置
-      context.config.getConfigList(multipleTasks).asScala.map(reflectTask(_, data))
+    if (context.config.has(multipleTasks)) { // 多任务配置
+      context.config.get[Seq[NornsConfig]](multipleTasks).map(reflectTask(_, data))
     } else Seq(reflectTask(context.config, data))
 
   /**
@@ -55,28 +51,28 @@ abstract class BaseTaskJob extends TaskJob {
     * @param data 创建依赖上下文环境
     * @return 实例化 task
     */
-  private[this] def reflectTask(c: Config, data: Map[String, AnyRef]): Task = {
-    info(s"reflectTask by config ----------------------------------------------\n${ConfigUtils.render(c)}")
-    if (c.hasPathOrNull(taskClassName)) {
-      newInstanceBaseTask(c.getString(taskClassName), context, data)
+  private[this] def reflectTask(c: NornsConfig, data: Map[String, AnyRef]): Task = {
+    info(s"reflectTask by config ----------------------------------------------\n${c.show}")
+    if (c.has(taskClassName)) {
+      newInstanceBaseTask(c.get[String](taskClassName), context, data)
     } else {
-      if (!c.hasPath(input) || !c.hasPath(output)) {
+      if (!c.has(input) || !c.has(output)) {
         throw new IllegalArgumentException(s"config reflectTask setting [$input,$output]miss")
       } else {
         new BasePluginTask[E]() {
           private val _input = {
-            val config = c.getConfig(CoreConfigKeys.input)
-            newInstanceBaseTaskPlugin[Input[E]](inputPackage(config.getString(plugin)),
+            val config = c.get[NornsConfig](CoreConfigKeys.input)
+            newInstanceBaseTaskPlugin[Input[E]](inputPackage(config.get[String](plugin)),
               new ConfigurationImpl(config), context, data)
           }
 
-          private val _filters = if (c.hasPath(filter)) c.getConfigList(filter).asScala
-            .map(f => newInstanceBaseTaskPlugin[Filter[E]](filterPackage(f.getString(plugin)),
+          private val _filters = if (c.has(filter)) c.get[Seq[NornsConfig]](filter)
+            .map(f => newInstanceBaseTaskPlugin[Filter[E]](filterPackage(f.get[String](plugin)),
               new ConfigurationImpl(f), context, data))
           else Seq.empty
 
-          private val _outputs = c.getConfigList(output).asScala
-            .map(f => newInstanceBaseTaskPlugin[Output[E]](outputPackage(f.getString(plugin)),
+          private val _outputs = c.get[Seq[NornsConfig]](output)
+            .map(f => newInstanceBaseTaskPlugin[Output[E]](outputPackage(f.get[String](plugin)),
               new ConfigurationImpl(f), context, data))
 
           override def input: Input[E] = _input
