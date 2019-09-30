@@ -1,7 +1,7 @@
 package io.github.nornslab.norns.core.utils
 
 import io.github.nornslab.norns.core.api.base.BaseTask
-import io.github.nornslab.norns.core.api.{Configuration, Context}
+import io.github.nornslab.norns.core.api.{Configuration, JobContext, TaskContext}
 import io.github.nornslab.norns.core.plugins.BaseTaskPlugin
 
 /**
@@ -18,14 +18,14 @@ object ReflectUtils {
   /** ref [[BaseTask]]
     *
     * @param className className
-    * @param data      data
+    * @param tc        data
     */
   def newInstanceBaseTask(className: String,
-                          context: Context,
-                          data: Map[String, AnyRef]): BaseTask =
+                          jc: JobContext,
+                          tc: TaskContext): BaseTask =
     Class.forName(className)
-      .getConstructor(context.getClass, classOf[Map[String, AnyRef]])
-      .newInstance(context, data)
+      .getConstructor(jc.getClass, tc.getClass)
+      .newInstance(jc, tc)
       .asInstanceOf[BaseTask]
 
   /** ref [[BaseTaskPlugin]]
@@ -34,11 +34,11 @@ object ReflectUtils {
     */
   def newInstanceBaseTaskPlugin[T](className: String,
                                    pluginConfig: Configuration,
-                                   context: Context,
-                                   data: Map[String, AnyRef]): T =
+                                   jc: JobContext,
+                                   tc: TaskContext): T =
     Class.forName(className)
-      .getConstructor(classOf[Configuration], context.getClass, classOf[Map[String, AnyRef]])
-      .newInstance(pluginConfig, context, data)
+      .getConstructor(classOf[Configuration], jc.getClass, tc.getClass)
+      .newInstance(pluginConfig, jc, tc)
       .asInstanceOf[T]
 
 }

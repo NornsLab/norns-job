@@ -4,11 +4,11 @@ package io.github.nornslab.norns.core.api
   *
   * @author Li.Wei by 2019/8/29
   */
-trait Job extends Service {
+trait Job extends LifecycleAware {
 
-  type C <: Context
+  type JC <: JobContext
 
-  def context: C
+  def context: JC
 
   override def close(): Unit = context.close()
 }

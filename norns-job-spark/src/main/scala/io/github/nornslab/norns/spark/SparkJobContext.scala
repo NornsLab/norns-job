@@ -1,6 +1,6 @@
 package io.github.nornslab.norns.spark
 
-import io.github.nornslab.norns.core.api.Context
+import io.github.nornslab.norns.core.api.JobContext
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.{SparkConf, SparkContext}
 
@@ -9,7 +9,7 @@ import org.apache.spark.{SparkConf, SparkContext}
   *
   * @param sparkConfSetting 扩展sparkConf配置信息
   */
-class SparkJobContext(val sparkConfSetting: Traversable[(String, String)] = Map.empty) extends Context {
+class SparkJobContext(val sparkConfSetting: Traversable[(String, String)] = Map.empty) extends JobContext {
 
   private val _sparkConf: SparkConf = buildSparkConf()
   private val _sc: SparkContext = SparkContext.getOrCreate(_sparkConf)

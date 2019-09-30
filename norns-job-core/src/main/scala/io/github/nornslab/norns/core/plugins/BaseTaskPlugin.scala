@@ -13,8 +13,6 @@ class BaseTaskPlugin(val pluginConfig: Configuration,
                      val context: Context,
                      val data: Map[String, AnyRef])
   extends Plugin {
-  self =>
-
   // 插件配置信息 = 初始化插件配置信息+默认配置信息（非必填默认进行配置填充）todo 覆盖问题待测试
   /* val pluginConfig: Config = {
      val config = ConfigFactory.parseMap {

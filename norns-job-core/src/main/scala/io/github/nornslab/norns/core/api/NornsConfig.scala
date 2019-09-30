@@ -14,23 +14,50 @@ import scala.collection.JavaConverters._
 import scala.concurrent.duration.{Duration, FiniteDuration}
 import scala.util.control.NonFatal
 
-/** https://github.com/playframework/playframework/blob/master/core/play/src/main/scala/play/api/Configuration.scala
+/** 配置参数封装
+  * 封装 com.typesafe.config.Config java 为 scala 适配
+  * 参考实现
+  * https://github.com/playframework/playframework/blob/master/core/play/src/main/scala/play/api/Configuration.scala
   *
-  * This object provides a set of operations to create `NornsConfig` values.
-  *
-  * For example, to load a `NornsConfig` in a running application:
+  * For example:
   * {{{
-  * val config = NornsConfig.load()
-  * val foo = config.getString("foo").getOrElse("boo")
+  * val configuration = NornsConfig.load()
+  * get[Int]
+  * get[Boolean]
+  * get[Double]
+  * get[Long]
+  * get[Number]
+  * get[NornsConfig]
+  * get[ConfigList]
+  *
+  * get[Seq[Boolean]]
+  * get[Seq[Double]]
+  * get[Seq[Int]]
+  * get[Seq[Long]]
+  * get[Seq[Duration]].map(_.toMillis)
+  * get[Seq[Duration]].map(_.toMillis)
+  * get[Seq[Number]]
+  * get[Seq[String]]
+  * get[ConfigObject]
+  *
+  * underlying.getBytes
+  * underlying.getBooleanList
+  * underlying.getBytesList
+  * underlying.getConfigList
+  * underlying.getDoubleList
+  * underlying.getIntList
+  * underlying.getLongList
+  * underlying.getMillisecondsList
+  * underlying.getNanosecondsList
+  * underlying.getNumberList
+  * underlying.getObjectList
+  * underlying.getStringList
   * }}}
   *
-  * The underlying implementation is provided by https://github.com/typesafehub/config.
   */
 object NornsConfig {
 
   private[this] lazy val dontAllowMissingConfigOptions = ConfigParseOptions.defaults().setAllowMissing(false)
-
-  private[this] lazy val dontAllowMissingConfig = ConfigFactory.load(dontAllowMissingConfigOptions)
 
   def load(classLoader: ClassLoader = this.getClass.getClassLoader,
            properties: Properties = new Properties(),
@@ -58,20 +85,11 @@ object NornsConfig {
     }
   }
 
-  /**
-    * Returns an empty NornsConfig object.
-    */
-  def empty: NornsConfig = NornsConfig(ConfigFactory.empty())
+  def loadEmpty: NornsConfig = NornsConfig(ConfigFactory.empty())
 
-  /**
-    * Returns the reference configuration object.
-    */
-  def reference: NornsConfig = NornsConfig(defaultReference())
+  def loadReference: NornsConfig = NornsConfig(defaultReference())
 
-  /**
-    * Create a new NornsConfig from the data passed as a Map.
-    */
-  def from(data: Map[String, Any]): NornsConfig = {
+  def loadFrom(data: Map[String, Any]): NornsConfig = {
 
     def toJava(data: Any): Any = data match {
       case map: Map[_, _] => map.mapValues(toJava).toMap.asJava
@@ -82,10 +100,7 @@ object NornsConfig {
     NornsConfig(parseMap(toJava(data).asInstanceOf[java.util.Map[String, AnyRef]]))
   }
 
-  /**
-    * Create a new NornsConfig from the given key-value pairs.
-    */
-  def apply(data: (String, Any)*): NornsConfig = from(data.toMap)
+  def apply(data: (String, Any)*): NornsConfig = loadFrom(data.toMap)
 
   private[api] def configError(message: String,
                                origin: Option[ConfigOrigin] = None,
@@ -103,45 +118,6 @@ object NornsConfig {
   private[NornsConfig] val logger = Logger(getClass)
 }
 
-/*
-    * For example:
-    * {{{
-    * val configuration = NornsConfig.load()
-    * get[Int]
-    * get[Boolean]
-    * get[Double]
-    * get[Long]
-    * get[Number]
-    * get[NornsConfig]
-    * get[ConfigList]
-    *
-    * get[Seq[Boolean]]
-    * get[Seq[Double]]
-    * get[Seq[Int]]
-    * get[Seq[Long]]
-    * get[Seq[Duration]].map(_.toMillis)
-    * get[Seq[Duration]].map(_.toMillis)
-    * get[Seq[Number]]
-    * get[Seq[String]]
-    * get[ConfigObject]
-    *
-    * underlying.getBytes
-    * underlying.getBooleanList
-    * underlying.getBytesList
-    * underlying.getConfigList
-    * underlying.getDoubleList
-    * underlying.getIntList
-    * underlying.getLongList
-    * underlying.getMillisecondsList
-    * underlying.getNanosecondsList
-    * underlying.getNumberList
-    * underlying.getObjectList
-    * underlying.getStringList
-    *
-    * A configuration error will be thrown if the configuration value is not a valid `Int`.
-    *
-    * @return a configuration value
-    */
 /**
   * A full configuration set.
   *
@@ -179,20 +155,20 @@ case class NornsConfig(underlying: Config) {
     }
   }
 
-  def getPrototypedSeq(path: String, prototypePath: String = "prototype.$path"): Seq[NornsConfig] = {
+  /* def getPrototypedSeq(path: String, prototypePath: String = "prototype.$path"): Seq[NornsConfig] = {
     val prototype = underlying.getConfig(prototypePath.replace("$path", path))
     get[Seq[Config]](path).map { config =>
       NornsConfig(config.withFallback(prototype))
     }
-  }
+  } */
 
-  def getPrototypedMap(path: String, prototypePath: String = "prototype.$path"): Map[String, NornsConfig] = {
+  /* def getPrototypedMap(path: String, prototypePath: String = "prototype.$path"): Map[String, NornsConfig] = {
     val prototype = if (prototypePath.isEmpty) underlying
     else underlying.getConfig(prototypePath.replace("$path", path))
     get[Map[String, Config]](path).map {
       case (key, config) => key -> NornsConfig(config.withFallback(prototype))
     }
-  }
+  } */
 
   /**
     * Retrieves a configuration value as `Milliseconds`.
@@ -367,7 +343,7 @@ object ConfigLoader {
       if (config.getIsNull(path)) None else Some(valueLoader.load(config, path))
     }
 
-  implicit def mapLoader[A](implicit valueLoader: ConfigLoader[A]): ConfigLoader[Map[String, A]] =
+  /* implicit def mapLoader[A](implicit valueLoader: ConfigLoader[A]): ConfigLoader[Map[String, A]] =
     (config: Config, path: String) => {
       val obj = config.getObject(path)
       val conf = obj.toConfig
@@ -382,5 +358,5 @@ object ConfigLoader {
           key -> valueLoader.load(conf, path)
         }
         .toMap
-    }
+    } */
 }

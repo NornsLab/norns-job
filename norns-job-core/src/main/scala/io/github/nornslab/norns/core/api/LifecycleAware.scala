@@ -2,15 +2,11 @@ package io.github.nornslab.norns.core.api
 
 import io.github.nornslab.norns.core.utils.Logging
 
-/** 定义服务流程 init -> start -> stop
-  *
-  * 服务提供上下文环境 context
+/** 定义生命周期流程 init -> start -> stop
   *
   * @author Li.Wei by 2019/9/4
   */
-trait Service extends Logging with AutoCloseable {
-
-  def name: String = getClass.getName
+trait LifecycleAware extends Logging with NamedComponent with AutoCloseable {
 
   /** 启动前初始化操作，参数校验、资源配置信息初始化等操作 */
   def init: Option[Throwable] = None

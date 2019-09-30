@@ -9,12 +9,14 @@ package io.github.nornslab.norns.core.api
   *
   * @author Li.Wei by 2019/9/2
   */
-trait TaskJob extends Job {
+trait TaskBuilder {
+
+  type TC <: TaskContext
 
   /** 当前待运行 Task，如需指定具体需要执行实例，重写该方法即可 */
-  def runningTasks(data: Map[String, AnyRef]): Seq[Task]
+  def buildTasks(jc: JobContext)(implicit tc: TC): Seq[Task]
 
   /** job context 转换为多个 task 依赖上下文环境 ，每个 task 依赖上下文环境将被 task执行一次 */
-  def taskData: Seq[Map[String, AnyRef]]
+  def buildTaskContexts: Seq[TC]
 
 }

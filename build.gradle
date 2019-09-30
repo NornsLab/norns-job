@@ -42,7 +42,6 @@ allprojects {
     version '0.1'
 }
 
-
 subprojects {
     apply plugin: 'java'
     apply plugin: 'scala'
@@ -58,6 +57,12 @@ subprojects {
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
+    }
+    
+//    applicationDefaultJvmArgs = ["-Dlog4j.configuration=log4j.properties"]
+
+    task wrapper(type: Wrapper) {
+        gradleVersion = '5.6.2'
     }
 
     tasks.withType(ScalaCompile) {
@@ -97,6 +102,7 @@ subprojects {
         compile rootProject.ext.dependencies["scala-library"]
         compile rootProject.ext.dependencies["scala-compiler"]
         testImplementation rootProject.ext.dependencies["junit"]
+        testCompile group: 'org.scalatest', name: 'scalatest_2.12', version: '3.2.0-M1'
     }
 }
 

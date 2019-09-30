@@ -1,6 +1,7 @@
 package io.github.nornslab.norns.examples.spark
 
 import io.github.nornslab.norns.core.NornsJob
+import io.github.nornslab.norns.core.api.base.EmptyTaskContext
 import io.github.nornslab.norns.spark.{SJC, SparkTask, SparkTaskJob}
 
 /**
@@ -15,17 +16,15 @@ object SparkRefPluginTaskExample {
   }
 }
 
-class NewUser(override val context: SJC,
-              override val data: Map[String, AnyRef])
-  extends SparkTask(context, data) {
+class NewUser(implicit override val jc: SJC,
+              implicit override val tc: EmptyTaskContext) extends SparkTask {
   override def start(): Unit = {
     info(s"$name running...")
   }
 }
 
-class NewRole(override val context: SJC,
-              override val data: Map[String, AnyRef])
-  extends SparkTask(context, data) {
+class NewRole(implicit override val jc: SJC,
+              implicit override val tc: EmptyTaskContext) extends SparkTask {
   override def start(): Unit = {
     info(s"$name running...")
   }

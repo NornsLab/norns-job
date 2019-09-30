@@ -1,6 +1,6 @@
 package io.github.nornslab.norns.core.api.base
 
-import io.github.nornslab.norns.core.api.{Context, Task}
+import io.github.nornslab.norns.core.api.{JobContext, Task, TaskContext}
 
 /** Task 任务基础类
   *
@@ -9,8 +9,7 @@ import io.github.nornslab.norns.core.api.{Context, Task}
   *
   * @author Li.Wei by 2019/9/2
   */
-abstract class BaseTask(val context: Context,
-                        val data: Map[String, AnyRef])
+abstract class BaseTask(implicit val jc: JobContext = EmptyJobContext.empty,
+                        implicit val tc: TaskContext = EmptyTaskContext.empty)
   extends Task
-
 

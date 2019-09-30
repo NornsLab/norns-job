@@ -3,7 +3,7 @@ package io.github.nornslab.norns.examples.config
 import java.util
 
 import com.typesafe.config.{Config, ConfigFactory, ConfigResolveOptions}
-import io.github.nornslab.norns.core.utils.{ConfigUtils, Logging}
+import io.github.nornslab.norns.core.utils.Logging
 
 import scala.collection.JavaConverters._
 
@@ -17,7 +17,6 @@ object ConfigExamples extends Logging {
       .parseResources("norns-job-examples.conf")
       .resolve(ConfigResolveOptions.defaults().setAllowUnresolved(true))
 
-    info(s"root = \n${root.root().render(ConfigUtils.renderOptions)}")
     val str = root.getString("jobClassName")
     // root.getConfig("input").getAnyRefList("")
     val inputList = root.getAnyRefList("input")

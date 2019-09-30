@@ -20,6 +20,7 @@ case class PluginConfigSpec[T](key: String,
   val required: Boolean = defaultValue.isDefined
 }
 
+/** 快速构建 [[PluginConfigSpec]] 信息 */
 object PluginConfigSpec {
 
   def string(key: String): PluginConfigSpec[String] =
