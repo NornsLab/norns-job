@@ -1,7 +1,7 @@
 package io.github.nornslab.norns.core.utils
 
 import io.github.nornslab.norns.core.api.base.BaseTask
-import io.github.nornslab.norns.core.api.{Configuration, JobContext, TaskContext}
+import io.github.nornslab.norns.core.api.{Configuration, JobContext, Task, TaskContext}
 import io.github.nornslab.norns.core.plugins.BaseTaskPlugin
 
 /**
@@ -22,11 +22,11 @@ object ReflectUtils {
     */
   def newInstanceBaseTask(className: String,
                           jc: JobContext,
-                          tc: TaskContext): BaseTask =
+                          tc: TaskContext): Task =
     Class.forName(className)
       .getConstructor(jc.getClass, tc.getClass)
       .newInstance(jc, tc)
-      .asInstanceOf[BaseTask]
+      .asInstanceOf[Task]
 
   /** ref [[BaseTaskPlugin]]
     *

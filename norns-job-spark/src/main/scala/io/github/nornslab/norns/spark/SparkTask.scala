@@ -8,7 +8,7 @@ import io.github.nornslab.norns.core.api.base.BaseTask
   */
 class SparkTask(implicit override val jc: SJC,
                 implicit override val tc: TaskContext)
-  extends BaseTask
+  extends BaseTask[SJC]
 
 
 

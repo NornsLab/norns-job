@@ -1,34 +1,43 @@
 package io.github.nornslab.norns.examples.core
 
-/*
+import io.github.nornslab.norns.core.NornsJob
+import io.github.nornslab.norns.core.api.base.{BaseTask, DefaultJobContext, DefaultTaskJob}
+import io.github.nornslab.norns.core.api.{NornsConfig, Task, TaskContext}
+import io.github.nornslab.norns.core.utils.Logging
+
 
 object TaskJobExample extends Logging {
 
   def main(args: Array[String]): Unit = NornsJob.work(classOf[TaskJobExample])
 }
 
-class TaskJobExample extends BaseTaskJob {
+class TaskJobExample extends DefaultTaskJob {
 
-  override val taskBuilder: TaskBuilder = new TaskBuilder {
-    override type TC = AppTaskContext
+  override def buildTasks(jc: DefaultJobContext)(implicit tc: TaskContext): Seq[Task] =
+    Seq(new BaseAppTask1(), new BaseAppTask2())
 
-    override def buildTasks(jc: JobContext)(implicit tc: TC): Seq[Task] = Seq(BaseAppTask())
+  override def buildTaskContexts: Seq[TaskContext] = Seq(
+    TaskContext(NornsConfig.loadFrom(Map("app" -> "app1"))),
+    TaskContext(NornsConfig.loadFrom(Map("app" -> "app2")))
+  )
+}
 
-    override def buildTaskContexts: Seq[TC] = Seq(new AppTaskContext("app-1"), new AppTaskContext("app-2"))
+class BaseAppTask1(implicit override val jc: DefaultJobContext,
+                   implicit override val tc: TaskContext)
+  extends BaseTask[DefaultJobContext] {
+
+  override def start(): Unit = {
+    info(s"""$name . running code by app=${tc.nornsConfig.get[String]("app")}""")
   }
-
-  override type JC = EmptyJobContext
-
-  override def context: EmptyJobContext = EmptyJobContext.empty
 
 }
 
-class AppTaskContext(val app: String) extends TaskContext
-
-case class BaseAppTask(implicit override val tc: AppTaskContext) extends BaseTask {
+class BaseAppTask2(implicit override val jc: DefaultJobContext,
+                   implicit override val tc: TaskContext)
+  extends BaseTask[DefaultJobContext] {
 
   override def start(): Unit = {
-    info(s"$name . running code by app=${tc.app}")
+    info(s"""$name . running code by app=${tc.nornsConfig.get[String]("app")}""")
   }
 
-} */
+}
