@@ -4,9 +4,7 @@ package io.github.nornslab.norns.core.api
   *
   * @author Li.Wei by 2019/8/29
   */
-trait Job extends LifecycleAware {
-
-  type JC <: JobContext
+trait Job[JC <: JobContext] extends LifecycleAware {
 
   def context: JC
 

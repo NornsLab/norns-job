@@ -1,9 +1,6 @@
 package io.github.nornslab.norns.examples.core
 
-import io.github.nornslab.norns.core._
-import io.github.nornslab.norns.core.api.base.{BaseTask, BaseTaskJob, EmptyJobContext}
-import io.github.nornslab.norns.core.api.{JobContext, Task, TaskBuilder, TaskContext}
-import io.github.nornslab.norns.core.utils.Logging
+/*
 
 object TaskJobExample extends Logging {
 
@@ -34,4 +31,4 @@ case class BaseAppTask(implicit override val tc: AppTaskContext) extends BaseTas
     info(s"$name . running code by app=${tc.app}")
   }
 
-}
+} */

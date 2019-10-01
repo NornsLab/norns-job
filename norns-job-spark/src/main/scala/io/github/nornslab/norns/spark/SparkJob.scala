@@ -6,20 +6,18 @@ import org.apache.spark.sql.DataFrame
 /**
   * @author Li.Wei by 2019/8/31
   */
-trait SparkJob extends Job {
+trait SparkJob extends Job[SJC] {
 
-  override type JC = SJC
-
-  private val _jc: JC = new JC(
+  private val _jc: SJC = new SJC(
     Map(
       "spark.app.name" -> name,
       "spark.master" -> "local"
     )
   )
 
-  implicit override def context: JC = _jc
+  implicit override def context: SJC = _jc
 
-  def sql(sql: String)(implicit a: JC): DataFrame = a.sparkSession.sql(sql)
+  def sql(sql: String)(implicit a: SJC): DataFrame = a.sparkSession.sql(sql)
 }
 
 
