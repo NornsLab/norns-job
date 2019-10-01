@@ -1,11 +1,11 @@
 package io.github.nornslab.norns.core.plugins
 
-import io.github.nornslab.norns.core.api.{Configuration, Context, Filter, LifecycleAware}
+import io.github.nornslab.norns.core.api._
 
 /**
   * @author Li.Wei by 2019/9/19
   */
-abstract class BaseFilter[E](override val pluginConfig: Configuration,
-                             override val context: Context,
-                             override val data: Map[String, AnyRef])
-  extends BaseTaskPlugin(pluginConfig, context, data) with Filter[E] with LifecycleAware
+abstract class BaseFilter[JC <: JobContext, PLUG_EVENT](implicit override val pluginConfig: Configuration,
+                                                        implicit override val jc: JC,
+                                                        implicit override val tc: TaskContext)
+  extends BaseTaskPlugin[JC] with Filter[PLUG_EVENT] with LifecycleAware

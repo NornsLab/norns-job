@@ -5,8 +5,8 @@ import io.github.nornslab.norns.core.api.JobContext
 /**
   * @author Li.Wei by 2019/9/19
   */
-case class EmptyJobContext() extends JobContext
+case class DefaultJobContext() extends JobContext
 
-object EmptyJobContext {
-  val empty = EmptyJobContext()
+object DefaultJobContext {
+  val empty = DefaultJobContext()
 }

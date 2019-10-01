@@ -5,10 +5,12 @@ import io.github.nornslab.norns.core.utils.Logging
 /**
   * @author Li.Wei by 2019/9/30
   */
-trait JobContext extends Context {
+trait JobContext extends AutoCloseable with NamedComponent {
 
   /** 当前上下文内容提供配置信息 */
   def config: NornsConfig = JobContext.defaultLoadConfig
+
+  override def close(): Unit = {}
 }
 
 private object JobContext extends Logging {

@@ -6,12 +6,13 @@ import io.github.nornslab.norns.core.api._
   * [[Plugin]] 基础实现
   *
   * @param pluginConfig 插件初始化配置信息
-  * @param data         插件依赖数据参数
+  * @param jc           插件依赖JobContext参数
+  * @param tc           插件依赖数据参数
   * @author Li.Wei by 2019/9/2
   */
-class BaseTaskPlugin(val pluginConfig: Configuration,
-                     val context: Context,
-                     val data: Map[String, AnyRef])
+class BaseTaskPlugin[JC <: JobContext](implicit val pluginConfig: Configuration,
+                                       implicit val jc: JC,
+                                       implicit val tc: TaskContext)
   extends Plugin {
   // 插件配置信息 = 初始化插件配置信息+默认配置信息（非必填默认进行配置填充）todo 覆盖问题待测试
   /* val pluginConfig: Config = {

@@ -9,7 +9,7 @@ import io.github.nornslab.norns.core.api.{JobContext, Task, TaskContext}
   *
   * @author Li.Wei by 2019/9/2
   */
-abstract class BaseTask(implicit val jc: JobContext = EmptyJobContext.empty,
-                        implicit val tc: TaskContext = EmptyTaskContext.empty)
+abstract class BaseTask[JC <: JobContext](implicit val jc: JC,
+                                          implicit val tc: TaskContext = TaskContext.empty)
   extends Task
 
