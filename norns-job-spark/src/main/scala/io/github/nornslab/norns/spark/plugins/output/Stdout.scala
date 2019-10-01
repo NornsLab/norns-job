@@ -3,6 +3,7 @@ package io.github.nornslab.norns.spark.plugins.output
 import io.github.nornslab.norns.core.api.{Configuration, PluginConfigSpec, TaskContext}
 import io.github.nornslab.norns.core.plugins.BaseOutput
 import io.github.nornslab.norns.spark.SJC
+import io.github.nornslab.norns.spark.plugins.output.StdoutPluginConfigSpec.limitConfigSpec
 import org.apache.spark.sql.{Dataset, Row}
 
 /**
@@ -13,11 +14,13 @@ class Stdout(implicit override val pluginConfig: Configuration,
              implicit override val tc: TaskContext)
   extends BaseOutput[SJC, Dataset[Row]] {
 
-  val limit = pluginConfig.get(StdoutPluginConfigSpec.limitConfigSpec).intValue()
+  val limit = pluginConfig.get(limitConfigSpec).intValue()
 
   override def output(d: Dataset[Row]): Unit = {
     d.collect().take(limit).foreach(println(_))
   }
+
+  override def configSchema: Seq[PluginConfigSpec[_]] = Seq(limitConfigSpec)
 }
 
 /* ------------------------------------------------------------------------------------- *

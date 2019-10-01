@@ -10,6 +10,7 @@ import io.github.nornslab.norns.core.api._
   * @param tc           插件依赖数据参数
   * @author Li.Wei by 2019/9/2
   */
+@deprecated
 class BaseTaskPlugin[JC <: JobContext](implicit val pluginConfig: Configuration,
                                        implicit val jc: JC,
                                        implicit val tc: TaskContext)

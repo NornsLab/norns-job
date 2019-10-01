@@ -7,7 +7,7 @@ import io.github.nornslab.norns.core.utils.ReflectUtils.{newInstanceBaseTask, ne
 /**
   * @author Li.Wei by 2019/10/1
   */
-class BaseTaskBuilder[JC <: JobContext, PLUG_EVENT] extends TaskBuilder[JC] with Logging {
+class BaseTaskBuilder[JC <: JobContext, PLUG_EVENT <: Serializable] extends TaskBuilder[JC] with Logging {
 
   // 反射获取插件时，默认 TaskJob 包地址下 plugins ,如需要重写该参数即可 todo 配置化集中处理
   val pluginPackage: String = s"io.github.nornslab.norns.spark.plugins"

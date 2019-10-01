@@ -4,10 +4,10 @@ import io.github.nornslab.norns.core.api.PluginTask
 
 /** 提供 Task 插件式任务类
   *
-  * @tparam E 插件处理流程依赖数据结构
+  * @tparam PLUG_EVENT 插件处理流程依赖数据结构
   * @author Li.Wei by 2019/9/2
   */
-abstract class BasePluginTask[E] extends PluginTask[E] {
+abstract class BasePluginTask[PLUG_EVENT <: Serializable] extends PluginTask[PLUG_EVENT] {
   // self =>
 
   /* override def init: Option[Throwable] =
