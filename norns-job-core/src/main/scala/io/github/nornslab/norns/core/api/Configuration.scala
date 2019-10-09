@@ -7,4 +7,6 @@ trait Configuration {
 
   def get[T](configSpec: PluginConfigSpec[T]): T
 
+  def get[T](configSpec: PluginConfigSpec[T], nornsConfig: NornsConfig): T
+
 }

@@ -26,4 +26,26 @@ class ConfigurationImpl(config: NornsConfig) extends Configuration {
     }
   }
 
+  override def get[T](configSpec: PluginConfigSpec[T], nornsConfig: NornsConfig): T = {
+    get[T](configSpec)
+  }
+}
+
+
+object ConfigurationImpl {
+  // %NJ\{[[^\[\]]*]\}
+  // %NJ{[@metadata][_type]}
+  // %NJ{(.*)} \[(.*?)\]+
+  def main(args: Array[String]): Unit = {
+    val r = "%TC\\{(.*?)\\}.*?".r
+    var sql = "SELECT * FROM %TC{tableName.aa} WHERE app = %TC{app.Id} AND time > 1"
+
+    var m = r.findFirstMatchIn(sql)
+    while (m.isDefined) {
+      sql = sql.replace(m.get.matched, "----")
+      m = r.findFirstMatchIn(sql)
+    }
+
+    println(m)
+  }
 }
