@@ -7,6 +7,6 @@ trait Configuration {
 
   def get[T](configSpec: PluginConfigSpec[T]): T
 
-  def get[T](configSpec: PluginConfigSpec[T], nornsConfig: NornsConfig): T
+  def get[T](configSpec: PluginConfigSpec[T], jobContext: JobContext, taskContext: TaskContext): T
 
 }

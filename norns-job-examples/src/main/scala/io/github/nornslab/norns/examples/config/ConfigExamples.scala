@@ -14,7 +14,7 @@ object ConfigExamples extends Logging {
 
   def main(args: Array[String]): Unit = {
     val root = ConfigFactory
-      .parseResources("norns-job-examples.conf")
+      .parseResources("core/norns-job-examples.conf")
       .resolve(ConfigResolveOptions.defaults().setAllowUnresolved(true))
 
     val str = root.getString("jobClassName")

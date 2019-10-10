@@ -57,8 +57,6 @@ import scala.util.control.NonFatal
   */
 object NornsConfig {
 
-  private[this] lazy val dontAllowMissingConfigOptions = ConfigParseOptions.defaults().setAllowMissing(false)
-
   def load(classLoader: ClassLoader = this.getClass.getClassLoader,
            properties: Properties = new Properties(),
            directSettings: Map[String, AnyRef] = Map.empty[String, AnyRef],
@@ -76,6 +74,7 @@ object NornsConfig {
         parseResources(classLoader, "norns/reference-overrides.conf"),
         parseResources(classLoader, "reference.conf")
       ).reduceLeft(_.withFallback(_))
+        .getConfig("norns")
 
       val resolvedConfig = combinedConfig.resolve
 
@@ -154,21 +153,6 @@ case class NornsConfig(underlying: Config) {
       case NonFatal(e) => throw reportError(path, e.getMessage, Some(e))
     }
   }
-
-  /* def getPrototypedSeq(path: String, prototypePath: String = "prototype.$path"): Seq[NornsConfig] = {
-    val prototype = underlying.getConfig(prototypePath.replace("$path", path))
-    get[Seq[Config]](path).map { config =>
-      NornsConfig(config.withFallback(prototype))
-    }
-  } */
-
-  /* def getPrototypedMap(path: String, prototypePath: String = "prototype.$path"): Map[String, NornsConfig] = {
-    val prototype = if (prototypePath.isEmpty) underlying
-    else underlying.getConfig(prototypePath.replace("$path", path))
-    get[Map[String, Config]](path).map {
-      case (key, config) => key -> NornsConfig(config.withFallback(prototype))
-    }
-  } */
 
   /**
     * Retrieves a configuration value as `Milliseconds`.
@@ -343,20 +327,4 @@ object ConfigLoader {
       if (config.getIsNull(path)) None else Some(valueLoader.load(config, path))
     }
 
-  /* implicit def mapLoader[A](implicit valueLoader: ConfigLoader[A]): ConfigLoader[Map[String, A]] =
-    (config: Config, path: String) => {
-      val obj = config.getObject(path)
-      val conf = obj.toConfig
-
-      obj
-        .keySet()
-        .asScala
-        .iterator
-        .map { key =>
-          // quote and escape the key in case it contains dots or special characters todo path 转义
-          // val path = "\"" + StringEscapeUtils.escapeEcmaScript(key) + "\""
-          key -> valueLoader.load(conf, path)
-        }
-        .toMap
-    } */
 }

@@ -5,7 +5,6 @@ package io.github.nornslab.norns.core.api
   */
 package object base {
 
-  /** [[TaskJob ]]运行子任务类名配置 */
   val multipleTasks = "multipleTasks"
   val taskClassName = "taskClassName"
 

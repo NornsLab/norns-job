@@ -23,7 +23,7 @@ class File(implicit override val pluginConfig: Configuration,
   override def configSchema: Seq[PluginConfigSpec[_]] = Seq(pathConfigSpec, formatConfigSpec, optionsConfigSpec)
 
   override def input: Dataset[Row] = {
-    val read = jc.sparkSession.read.options(options)
+    val read = jc.sparkSession.read.schema("").options(options)
     format match {
       case "text" => read.text(path).withColumnRenamed("value", "raw_message")
       case "parquet" => read.parquet(path)

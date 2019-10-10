@@ -1,6 +1,7 @@
 package io.github.nornslab.norns.core.api.base
 
-import io.github.nornslab.norns.core.api.{Configuration, NornsConfig, PluginConfigSpec}
+import io.github.nornslab.norns.core.api._
+import io.github.nornslab.norns.core.api.base.ConfigurationImpl.matchConfig
 
 /**
   * @author Li.Wei by 2019/9/19
@@ -15,37 +16,44 @@ class ConfigurationImpl(config: NornsConfig) extends Configuration {
     } else {
       if (pcs.defaultValue.isDefined) pcs.defaultValue.get
       else throw new IllegalStateException(s"error , Configuration get defaultValue [$key] miss")
-      /*
-      if (classType == classOf[String]) {
-        classType.cast(config.getString(pcs.key))
-      } else if (classType == classOf[Int]) {
-        classType.cast(config.getInt(pcs.key))
-      } else {
-        throw new IllegalStateException("error Configuration get")
-      } */
     }
   }
 
-  override def get[T](configSpec: PluginConfigSpec[T], nornsConfig: NornsConfig): T = {
-    get[T](configSpec)
-  }
+  /**
+    * @example
+    * {{{
+    *    val sql = "SELECT * FROM %VAL{tableName.aa} WHERE app = %VAL{app.Id} AND time > 1"
+    *    val result = matchConfig[String](sql, NornsConfig.loadFrom(Map("tableName.aa" -> "TABLE", "app.Id" -> 1)))
+    *    println(result) // SELECT * FROM TABLE WHERE app = 1 AND time > 1
+    * }}}
+    * @param configSpec  configSpec
+    * @param jobContext  jobContext
+    * @param taskContext taskContext
+    * @tparam T 数据类型
+    * @return t
+    */
+  override def get[T](configSpec: PluginConfigSpec[T], jobContext: JobContext, taskContext: TaskContext): T =
+    matchConfig[T](
+      matchConfig[T](get[T](configSpec), jobContext.config),
+      taskContext.nornsConfig
+    )
 }
 
 
 object ConfigurationImpl {
-  // %NJ\{[[^\[\]]*]\}
-  // %NJ{[@metadata][_type]}
-  // %NJ{(.*)} \[(.*?)\]+
-  def main(args: Array[String]): Unit = {
-    val r = "%TC\\{(.*?)\\}.*?".r
-    var sql = "SELECT * FROM %TC{tableName.aa} WHERE app = %TC{app.Id} AND time > 1"
 
-    var m = r.findFirstMatchIn(sql)
+  val regex = "%VAL\\{(.*?)\\}.*?".r
+  val regexPrefix = "%VAL{"
+
+  def matchConfig[T](t: T, nornsConfig: NornsConfig): T = {
+    var value = t.toString
+    var m = regex.findFirstMatchIn(value)
     while (m.isDefined) {
-      sql = sql.replace(m.get.matched, "----")
-      m = r.findFirstMatchIn(sql)
+      val matched = m.get.matched
+      val key = matched.substring(regexPrefix.length, matched.length - 1)
+      value = value.replace(matched, nornsConfig.get[String](key))
+      m = regex.findFirstMatchIn(value)
     }
-
-    println(m)
+    value.asInstanceOf[T]
   }
 }

@@ -10,7 +10,7 @@ import io.github.nornslab.norns.spark.{SJC, SparkTask, SparkTaskJob}
 object SparkRefPluginTaskExample {
   def main(args: Array[String]): Unit = {
     System.setProperty("norns.job.config",
-      ClassLoader.getSystemResource("norns-taskJob-multipleTasks-examples.conf").getPath)
+      ClassLoader.getSystemResource("spark/SparkRefPluginTaskExample.conf").getPath)
 
     NornsJob.work(classOf[SparkTaskJob])
   }
