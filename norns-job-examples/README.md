@@ -1,5 +1,5 @@
 # norns-job-examples
-
+[![Known Vulnerabilities](https://snyk.io//test/github/NornsLab/norns-job/badge.svg?targetFile=norns-job-examples/build.gradle)](https://snyk.io//test/github/NornsLab/norns-job?targetFile=norns-job-examples/build.gradle)
 ## 项目目录
 
 ### io.github.nornslab.norns.examples.$model
