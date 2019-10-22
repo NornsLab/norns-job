@@ -1,6 +1,6 @@
 package io.github.nornslab.norns.spark.plugins.output
 
-import io.github.nornslab.norns.core.api.{Configuration, PluginConfigSpec, TaskContext}
+import io.github.nornslab.norns.core.api.{Configuration, PluginConfigEntry, TaskContext}
 import io.github.nornslab.norns.core.plugins.BaseOutput
 import io.github.nornslab.norns.spark.SJC
 import io.github.nornslab.norns.spark.plugins.output.StdoutPluginConfigSpec.limitConfigSpec
@@ -17,10 +17,12 @@ class Stdout(implicit override val pluginConfig: Configuration,
   val limit = pluginConfig.get(limitConfigSpec).intValue()
 
   override def output(d: Dataset[Row]): Unit = {
+    // scalastyle:off println
     d.collect().take(limit).foreach(println(_))
+    // scalastyle:on println
   }
 
-  override def configSchema: Seq[PluginConfigSpec[_]] = Seq(limitConfigSpec)
+  override def configSchema: Seq[PluginConfigEntry[_]] = Seq(limitConfigSpec)
 }
 
 /* ------------------------------------------------------------------------------------- *
@@ -28,5 +30,6 @@ class Stdout(implicit override val pluginConfig: Configuration,
  * ------------------------------------------------------------------------------------- */
 object StdoutPluginConfigSpec {
 
-  val limitConfigSpec = PluginConfigSpec.number("limit", 10)
+  // val check: Number => Boolean = (v1: Number) => v1.intValue() > 0
+  val limitConfigSpec = PluginConfigEntry[Number]("limit", Some(10), _.intValue() > 0)
 }

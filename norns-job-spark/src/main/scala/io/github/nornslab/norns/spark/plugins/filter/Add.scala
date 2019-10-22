@@ -1,6 +1,6 @@
 package io.github.nornslab.norns.spark.plugins.filter
 
-import io.github.nornslab.norns.core.api.{Configuration, PluginConfigSpec, TaskContext}
+import io.github.nornslab.norns.core.api.{Configuration, PluginConfigEntry, TaskContext}
 import io.github.nornslab.norns.core.plugins.BaseFilter
 import io.github.nornslab.norns.spark.SJC
 import org.apache.spark.sql.{Dataset, Row}
@@ -15,5 +15,5 @@ class Add(implicit override val pluginConfig: Configuration,
 
   override def filter(d: Dataset[Row]): Dataset[Row] = d
 
-  override def configSchema: Seq[PluginConfigSpec[_]] = Seq.empty
+  override def configSchema: Seq[PluginConfigEntry[_]] = Seq.empty
 }

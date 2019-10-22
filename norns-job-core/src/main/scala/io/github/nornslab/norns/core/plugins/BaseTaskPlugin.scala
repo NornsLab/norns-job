@@ -57,7 +57,7 @@ class BaseTaskPlugin[JC <: JobContext](implicit val pluginConfig: Configuration,
   /** 插件支持配置项 */
   // def supportConfig: Seq[ConfigKey] = Seq.empty
 
-  override def configSchema: Seq[PluginConfigSpec[_]] = Seq.empty
+  override def configSchema: Seq[PluginConfigEntry[_]] = Seq.empty
 }
 
 

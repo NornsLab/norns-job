@@ -3,7 +3,7 @@ package io.github.nornslab.norns.spark.plugins.input
 import java.util
 import java.util.Collections
 
-import io.github.nornslab.norns.core.api.{Configuration, PluginConfigSpec, TaskContext}
+import io.github.nornslab.norns.core.api.{Configuration, PluginConfigEntry, TaskContext}
 import io.github.nornslab.norns.core.plugins.input.BaseFile
 import io.github.nornslab.norns.spark.SJC
 import io.github.nornslab.norns.spark.plugins.input.FilePluginConfigSpec._
@@ -22,7 +22,7 @@ class File(implicit override val pluginConfig: Configuration,
   val format = pluginConfig.get(formatConfigSpec)
   val options = pluginConfig.get(optionsConfigSpec)
 
-  override def configSchema: Seq[PluginConfigSpec[_]] = Seq(pathConfigSpec, formatConfigSpec, optionsConfigSpec)
+  override def configSchema: Seq[PluginConfigEntry[_]] = Seq(pathConfigSpec, formatConfigSpec, optionsConfigSpec)
 
   override def input: Dataset[Row] = {
     val read = jc.sparkSession.read.options(options)
@@ -47,12 +47,11 @@ class File(implicit override val pluginConfig: Configuration,
    File 插件支持配置项
  * ------------------------------------------------------------------------------------- */
 private object FilePluginConfigSpec {
-  val pathConfigSpec = PluginConfigSpec.string("path")
-  val schemaConfigSpec = PluginConfigSpec.string("schema", "")
-  val formatConfigSpec = PluginConfigSpec.string("format")
-  val optionsConfigSpec = PluginConfigSpec[util.Map[String, String]](
+  val pathConfigSpec = PluginConfigEntry.string("path")
+  val schemaConfigSpec = PluginConfigEntry.string("schema", "")
+  val formatConfigSpec = PluginConfigEntry.string("format")
+  val optionsConfigSpec = PluginConfigEntry[util.Map[String, String]](
     "options",
-    classOf[util.Map[String, String]],
     Some(Collections.emptyMap[String, String]())
   )
 }
