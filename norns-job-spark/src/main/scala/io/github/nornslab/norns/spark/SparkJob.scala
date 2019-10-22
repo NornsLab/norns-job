@@ -8,12 +8,7 @@ import org.apache.spark.sql.DataFrame
   */
 trait SparkJob extends Job[SJC] {
 
-  private val _jc: SJC = new SJC(
-    Map(
-      "spark.app.name" -> name,
-      "spark.master" -> "local"
-    )
-  )
+  private val _jc: SJC = new SJC()
 
   implicit override def context: SJC = _jc
 

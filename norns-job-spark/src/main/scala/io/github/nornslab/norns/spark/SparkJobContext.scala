@@ -7,9 +7,9 @@ import org.apache.spark.{SparkConf, SparkContext}
 /**
   * 封装 spark-job依赖 spark 相关对象信息
   *
-  * @param sparkConfSetting 扩展sparkConf配置信息
+  * @param sparkConfInit 扩展 sparkConf 配置信息
   */
-class SparkJobContext(val sparkConfSetting: Traversable[(String, String)] = Map.empty) extends JobContext {
+class SparkJobContext(val sparkConfInit: SparkConf = new SparkConf()) extends JobContext {
 
   private val _sparkConf: SparkConf = buildSparkConf()
   private val _sc: SparkContext = SparkContext.getOrCreate(_sparkConf)
@@ -17,15 +17,17 @@ class SparkJobContext(val sparkConfSetting: Traversable[(String, String)] = Map.
 
   /**
     * sparkConf 加载顺序
-    * norns.spark-default.conf -> Context.config 中 key=spark 配置信息 -> sparkConfSetting
+    * norns.spark-default -> spark -> sparkConfSetting
     *
     * @return SparkConf
     */
-  def buildSparkConf(): SparkConf = new SparkConf()
-    // .setAll(ConfigUtils.loadConfFile(Some(config) -> "norns.spark-default.conf").entrySet().asScala
-    // .map(f => f.getKey -> f.getValue.toString).toMap)
-    // .setAll(config.withOnlyPath("norns.spark").entrySet().asScala.map(f => f.getKey -> f.getValue.toString).toMap)
-    .setAll(sparkConfSetting)
+  def buildSparkConf(): SparkConf = {
+    val stringToString = config.getOptional[Map[String, String]]("spark").getOrElse(Map.empty)
+    sparkConfInit
+      .setAll(config.getOptional[Map[String, String]]("spark-default").getOrElse(Map.empty))
+      .setAll(stringToString)
+  }
+
 
   def sparkContext: SparkContext = _sc
 

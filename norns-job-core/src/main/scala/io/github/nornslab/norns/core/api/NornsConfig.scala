@@ -7,7 +7,7 @@ import java.util.Properties
 
 import com.typesafe.config.ConfigFactory._
 import com.typesafe.config.impl.ConfigImpl
-import com.typesafe.config.{ConfigFactory, _}
+import com.typesafe.config.{Config, ConfigFactory, _}
 import com.typesafe.scalalogging.Logger
 
 import scala.collection.JavaConverters._
@@ -265,6 +265,10 @@ object ConfigLoader {
 
   implicit val stringLoader: ConfigLoader[String] = ConfigLoader(_.getString)
   implicit val seqStringLoader: ConfigLoader[Seq[String]] = ConfigLoader(_.getStringList).map(_.asScala.toSeq)
+  implicit val stringStringMapLoader: ConfigLoader[Map[String, String]] = ConfigLoader { config =>
+    path =>
+      config.getConfig(path).entrySet().asScala.map(v => v.getKey -> v.getValue.unwrapped().toString).toMap
+  }
 
   implicit val intLoader: ConfigLoader[Int] = ConfigLoader(_.getInt)
   implicit val seqIntLoader: ConfigLoader[Seq[Int]] = ConfigLoader(_.getIntList).map(_.asScala.map(_.toInt).toSeq)
@@ -323,8 +327,6 @@ object ConfigLoader {
     * Loads a value, interpreting a null value as None and any other value as Some(value).
     */
   implicit def optionLoader[A](implicit valueLoader: ConfigLoader[A]): ConfigLoader[Option[A]] =
-    (config: Config, path: String) => {
-      if (config.getIsNull(path)) None else Some(valueLoader.load(config, path))
-    }
+    (config: Config, path: String) => if (config.getIsNull(path)) None else Some(valueLoader.load(config, path))
 
 }

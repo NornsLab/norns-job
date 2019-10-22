@@ -9,18 +9,6 @@ import io.github.nornslab.norns.core.utils.ReflectUtils.{newInstanceBaseTask, ne
   */
 class BaseTaskBuilder[JC <: JobContext, PLUG_EVENT <: Serializable] extends TaskBuilder[JC] with Logging {
 
-  // 反射获取插件时，默认 TaskJob 包地址下 plugins ,如需要重写该参数即可 todo 配置化集中处理
-  val pluginPackage: String = s"io.github.nornslab.norns.spark.plugins"
-  val pluginFilterPackage: String = s"$pluginPackage.filter"
-  val pluginOutputPackage: String = s"$pluginPackage.output"
-  val pluginInputPackage: String = s"$pluginPackage.input"
-
-  final def inputPackage(name: String): String = s"$pluginInputPackage.$name"
-
-  final def filterPackage(name: String): String = s"$pluginFilterPackage.$name"
-
-  final def outputPackage(name: String): String = s"$pluginOutputPackage.$name"
-
   /**
     * 当前待运行 Task，如需指定具体需要执行实例，重写该方法即可
     * =默认处理逻辑=
@@ -61,18 +49,16 @@ class BaseTaskBuilder[JC <: JobContext, PLUG_EVENT <: Serializable] extends Task
         new BasePluginTask[PLUG_EVENT]() {
           private val _input = {
             val config = c.get[NornsConfig](CoreConfigKeys.input)
-            newInstanceBaseTaskPlugin[Input[PLUG_EVENT]](inputPackage(config.get[String](plugin)),
+            newInstanceBaseTaskPlugin[Input[PLUG_EVENT]](config.get[String](plugin),
               new ConfigurationImpl(config), jc, tc)
           }
 
-          private val _filters = if (c.has(filter)) c.get[Seq[NornsConfig]](filter)
-            .map(f => newInstanceBaseTaskPlugin[Filter[PLUG_EVENT]](filterPackage(f.get[String](plugin)),
-              new ConfigurationImpl(f), jc, tc))
+          private val _filters = if (c.has(filter)) c.get[Seq[NornsConfig]](filter).map(f =>
+            newInstanceBaseTaskPlugin[Filter[PLUG_EVENT]](f.get[String](plugin), new ConfigurationImpl(f), jc, tc))
           else Seq.empty
 
-          private val _outputs = c.get[Seq[NornsConfig]](output)
-            .map(f => newInstanceBaseTaskPlugin[Output[PLUG_EVENT]](outputPackage(f.get[String](plugin)),
-              new ConfigurationImpl(f), jc, tc))
+          private val _outputs = c.get[Seq[NornsConfig]](output).map(f =>
+            newInstanceBaseTaskPlugin[Output[PLUG_EVENT]](f.get[String](plugin), new ConfigurationImpl(f), jc, tc))
 
           override def input: Input[PLUG_EVENT] = _input
 
