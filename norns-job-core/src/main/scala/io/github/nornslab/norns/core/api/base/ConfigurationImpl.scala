@@ -9,10 +9,9 @@ import io.github.nornslab.norns.core.api.base.ConfigurationImpl.matchConfig
 class ConfigurationImpl(config: NornsConfig) extends Configuration {
 
   override def get[T](pce: PluginConfigEntry[T]): T = {
-    val classType: Class[T] = pce.classType
     val key = pce.key
     val v = if (config.has(key)) { // 获取返回值
-      classType.cast(config.underlying.getAnyRef(key))
+      pce.valueClassType.cast(config.underlying.getAnyRef(key))
     } else {
       if (pce.defaultValue.isDefined) pce.defaultValue.get
       else throw new IllegalStateException(s"error , Configuration get defaultValue [$key] miss")

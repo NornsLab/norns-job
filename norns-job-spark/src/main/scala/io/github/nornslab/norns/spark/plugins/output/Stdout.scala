@@ -14,11 +14,11 @@ class Stdout(implicit override val pluginConfig: Configuration,
              implicit override val tc: TaskContext)
   extends BaseOutput[SJC, Dataset[Row]] {
 
-  val limit = pluginConfig.get(limitConfigSpec).intValue()
+  val limit = pluginConfig.get(limitConfigSpec)
 
   override def output(d: Dataset[Row]): Unit = {
     // scalastyle:off println
-    d.collect().take(limit).foreach(println(_))
+    d.collect().take(limit.intValue()).foreach(println(_))
     // scalastyle:on println
   }
 
@@ -31,5 +31,5 @@ class Stdout(implicit override val pluginConfig: Configuration,
 object StdoutPluginConfigSpec {
 
   // val check: Number => Boolean = (v1: Number) => v1.intValue() > 0
-  val limitConfigSpec = PluginConfigEntry[Number]("limit", Some(10), _.intValue() > 0)
+  val limitConfigSpec = PluginConfigEntry[Number]("limit", classOf[Number], Some(20), _.intValue() > 0)
 }

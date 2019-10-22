@@ -52,6 +52,7 @@ private object FilePluginConfigSpec {
   val formatConfigSpec = PluginConfigEntry.string("format")
   val optionsConfigSpec = PluginConfigEntry[util.Map[String, String]](
     "options",
+    classOf[util.Map[String, String]],
     Some(Collections.emptyMap[String, String]())
   )
 }
