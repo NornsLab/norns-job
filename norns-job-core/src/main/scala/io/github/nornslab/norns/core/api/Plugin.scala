@@ -7,6 +7,6 @@ package io.github.nornslab.norns.core.api
 trait Plugin extends LifecycleAware {
 
   /** 插件配置模式 */
-  def configSchema: Seq[PluginConfigEntry[_]]
+  def configSchema: Seq[ConfigEntry[_]]
 
 }

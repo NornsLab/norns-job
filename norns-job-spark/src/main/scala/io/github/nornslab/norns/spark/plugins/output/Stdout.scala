@@ -1,6 +1,6 @@
 package io.github.nornslab.norns.spark.plugins.output
 
-import io.github.nornslab.norns.core.api.{Configuration, PluginConfigEntry, TaskContext}
+import io.github.nornslab.norns.core.api.{ConfigEntry, ConfigEntryBuilder, Configuration, TaskContext}
 import io.github.nornslab.norns.core.plugins.BaseOutput
 import io.github.nornslab.norns.spark.SJC
 import io.github.nornslab.norns.spark.plugins.output.StdoutPluginConfigSpec.limitConfigSpec
@@ -22,7 +22,7 @@ class Stdout(implicit override val pluginConfig: Configuration,
     // scalastyle:on println
   }
 
-  override def configSchema: Seq[PluginConfigEntry[_]] = Seq(limitConfigSpec)
+  override def configSchema: Seq[ConfigEntry[_]] = Seq(limitConfigSpec)
 }
 
 /* ------------------------------------------------------------------------------------- *
@@ -30,6 +30,5 @@ class Stdout(implicit override val pluginConfig: Configuration,
  * ------------------------------------------------------------------------------------- */
 object StdoutPluginConfigSpec {
 
-  // val check: Number => Boolean = (v1: Number) => v1.intValue() > 0
-  val limitConfigSpec = PluginConfigEntry[Number]("limit", classOf[Number], Some(20), _.intValue() > 0)
+  val limitConfigSpec = ConfigEntryBuilder("limit").intConf.checkValue(_ > 0, "limit must be > 0").create(Some(20))
 }

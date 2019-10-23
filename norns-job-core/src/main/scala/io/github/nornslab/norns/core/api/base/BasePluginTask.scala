@@ -8,22 +8,20 @@ import io.github.nornslab.norns.core.api.PluginTask
   * @author Li.Wei by 2019/9/2
   */
 abstract class BasePluginTask[PLUG_EVENT <: Serializable] extends PluginTask[PLUG_EVENT] {
-  // self =>
 
-  /* override def init: Option[Throwable] =
-     (Seq(self.input.init) ++ self.filters.map(_.init) ++ self.outputs.map(_.init))
-       .filter(_.isDefined)
-       .map(_.get)
-       .reduceOption((e1: Throwable, e2: Throwable) => {
-         e1.addSuppressed(e2)
-         e1
-       })
- */
+  lazy val allPlug = outputs ++ filters ++ Seq(input)
+
   override def start(): Unit = {
     // 推导为链式写法 待测试 多输出情况下提供cache操作(可用filter实现，具体根据输出out是否为多个自行定义) 提供并行写出操作
     outputs.foreach {
       _.output(filters.foldLeft(input.input)((d, f) => f.filter(d)))
     }
+
+    allPlug.foreach(_.start())
   }
 
+  override def close(): Unit = {
+    super.close()
+    allPlug.foreach(_.close())
+  }
 }

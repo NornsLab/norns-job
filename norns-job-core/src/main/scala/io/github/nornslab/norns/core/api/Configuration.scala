@@ -5,8 +5,8 @@ package io.github.nornslab.norns.core.api
   */
 trait Configuration {
 
-  def get[T](configSpec: PluginConfigEntry[T]): T
+  def get[T](configSpec: ConfigEntry[T]): T
 
-  def get[T](configSpec: PluginConfigEntry[T], jobContext: JobContext, taskContext: TaskContext): T
+  def get[T](configSpec: ConfigEntry[T], jobContext: JobContext, taskContext: TaskContext): T
 
 }

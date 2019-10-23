@@ -4,21 +4,18 @@ import io.github.nornslab.norns.core.api._
 import io.github.nornslab.norns.core.api.base.ConfigurationImpl.matchConfig
 
 /**
+  * 直接使用 [[NornsConfig]] 初始化，或者使用 configPath 配置文件装载
+  *
+  * @param config NornsConfig
   * @author Li.Wei by 2019/9/19
   */
 class ConfigurationImpl(config: NornsConfig) extends Configuration {
 
-  override def get[T](pce: PluginConfigEntry[T]): T = {
-    val key = pce.key
-    val v = if (config.has(key)) { // 获取返回值
-      pce.valueClassType.cast(config.underlying.getAnyRef(key))
-    } else {
-      if (pce.defaultValue.isDefined) pce.defaultValue.get
-      else throw new IllegalStateException(s"error , Configuration get defaultValue [$key] miss")
-    }
-    if (pce.checkFunc.apply(v)) v // 对返回值做数据校验
-    else throw new IllegalStateException(s"error , Configuration check PluginConfigEntry [$pce] value [$v]")
+  def this(configPath: String) {
+    this(config = NornsConfig.load(applicationConfig = Option(configPath)))
   }
+
+  override def get[T](pce: ConfigEntry[T]): T = pce.readFrom(config)
 
   /**
     * 针对配置内容做数据动态替换
@@ -37,7 +34,7 @@ class ConfigurationImpl(config: NornsConfig) extends Configuration {
     * @tparam T 数据类型
     * @return t
     */
-  override def get[T](pce: PluginConfigEntry[T], jobContext: JobContext, taskContext: TaskContext): T =
+  override def get[T](pce: ConfigEntry[T], jobContext: JobContext, taskContext: TaskContext): T =
     matchConfig[T](
       matchConfig[T](get[T](pce), jobContext.config),
       taskContext.nornsConfig
@@ -45,7 +42,7 @@ class ConfigurationImpl(config: NornsConfig) extends Configuration {
 }
 
 
-object ConfigurationImpl {
+private object ConfigurationImpl {
 
   val regex = "%VAL\\{(.*?)\\}.*?".r
   val regexPrefix = "%VAL{"

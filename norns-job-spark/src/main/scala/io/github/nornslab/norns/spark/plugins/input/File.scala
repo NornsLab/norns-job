@@ -1,12 +1,9 @@
 package io.github.nornslab.norns.spark.plugins.input
 
-import java.util
-import java.util.Collections
-
-import io.github.nornslab.norns.core.api.{Configuration, PluginConfigEntry, TaskContext}
+import io.github.nornslab.norns.core.api.{ConfigEntry, Configuration, TaskContext}
 import io.github.nornslab.norns.core.plugins.input.BaseFile
 import io.github.nornslab.norns.spark.SJC
-import io.github.nornslab.norns.spark.plugins.input.FilePluginConfigSpec._
+import io.github.nornslab.norns.spark.plugins.PluginConfigEntry._
 import org.apache.spark.sql.{Dataset, Row}
 
 /**
@@ -17,12 +14,13 @@ class File(implicit override val pluginConfig: Configuration,
            implicit override val tc: TaskContext)
   extends BaseFile[SJC, Dataset[Row]] {
 
-  val path = s"""file://${pluginConfig.get(pathConfigSpec)}"""
-  val schema = pluginConfig.get(schemaConfigSpec)
-  val format = pluginConfig.get(formatConfigSpec)
-  val options = pluginConfig.get(optionsConfigSpec)
+  val path = s"""file://${pluginConfig.get(pathConfig)}"""
+  val schema = pluginConfig.get(schemaConfig)
+  val format = pluginConfig.get(formatConfig)
+  val options = pluginConfig.get(optionsConfig)
 
-  override def configSchema: Seq[PluginConfigEntry[_]] = Seq(pathConfigSpec, formatConfigSpec, optionsConfigSpec)
+  override def configSchema: Seq[ConfigEntry[_]] =
+    Seq(pathConfig, schemaConfig, formatConfig, optionsConfig)
 
   override def input: Dataset[Row] = {
     val read = jc.sparkSession.read.options(options)
@@ -43,16 +41,9 @@ class File(implicit override val pluginConfig: Configuration,
   }
 }
 
-/* ------------------------------------------------------------------------------------- *
-   File 插件支持配置项
- * ------------------------------------------------------------------------------------- */
-private object FilePluginConfigSpec {
-  val pathConfigSpec = PluginConfigEntry.string("path")
-  val schemaConfigSpec = PluginConfigEntry.string("schema", "")
-  val formatConfigSpec = PluginConfigEntry.string("format")
-  val optionsConfigSpec = PluginConfigEntry[util.Map[String, String]](
-    "options",
-    classOf[util.Map[String, String]],
-    Some(Collections.emptyMap[String, String]())
-  )
+object Test {
+  def main(args: Array[String]): Unit = {
+    val file = new java.io.File("./")
+    println(file.listFiles())
+  }
 }
