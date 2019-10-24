@@ -1,0 +1,4 @@
+dependencies {
+    compile project(":job-spark")
+    compile group: 'org.elasticsearch', name: 'elasticsearch-spark-20_2.11', version: '7.4.1'
+}

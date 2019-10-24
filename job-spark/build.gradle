@@ -1,0 +1,7 @@
+dependencies {
+    compile project(":job-core")
+    compile group: 'org.apache.spark', name: 'spark-core_2.12', version: '2.4.4'
+    compile group: 'org.apache.spark', name: 'spark-streaming_2.12', version: '2.4.4'
+    compile group: 'org.apache.spark', name: 'spark-sql_2.12', version: '2.4.4'
+    compile group: 'org.apache.spark', name: 'spark-hive_2.12', version: '2.4.4'
+}

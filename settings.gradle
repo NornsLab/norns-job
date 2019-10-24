@@ -1,6 +1,16 @@
 rootProject.name = 'norns-job'
-include 'norns-job-core'
-include 'norns-job-examples'
-include 'norns-job-spark'
-include 'norns-job-flink'
+include 'job-core'
+include 'job-spark'
+include 'job-flink'
 
+include 'job-examples-core'
+project(':job-examples-core').projectDir = file('./job-examples/job-examples-core')
+
+include 'job-examples-spark'
+project(':job-examples-spark').projectDir = file('./job-examples/job-examples-spark')
+
+include 'job-examples-flink'
+project(':job-examples-flink').projectDir = file('./job-examples/job-examples-flink')
+
+include 'job-spark-elasticsearch'
+project(':job-spark-elasticsearch').projectDir = file('./job-spark-plugins/job-spark-elasticsearch')
