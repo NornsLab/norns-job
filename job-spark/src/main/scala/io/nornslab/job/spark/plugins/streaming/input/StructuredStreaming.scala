@@ -6,7 +6,7 @@ import io.nornslab.job.spark.SJC
 import io.nornslab.job.spark.plugins.streaming.input.StructuredStreaming._
 import org.apache.spark.sql.{Dataset, Row}
 
-/** 官方文档 http://spark.apache.org/docs/2.4.4/structured-streaming-programming-guide.html#input-sources
+/** 官方文档 http://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#input-sources
   *
   * @author Li.Wei by 2019/10/23
   */

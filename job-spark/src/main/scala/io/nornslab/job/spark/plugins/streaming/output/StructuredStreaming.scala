@@ -57,7 +57,9 @@ private object StructuredStreaming {
 
   val outputModeConfig = ConfigEntryBuilder("outputMode")
     .doc("support [Append, Update, Complete]")
-    .stringConf.create()
+    .stringConf
+    .checkValues(Set("Append", "Update", "Complete"))
+    .create()
 
   val partitionByConfig = ConfigEntryBuilder("partitionBy")
     .doc("partitionBy")

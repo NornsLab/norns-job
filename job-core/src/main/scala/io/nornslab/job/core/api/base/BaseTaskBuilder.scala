@@ -53,7 +53,7 @@ class BaseTaskBuilder[JC <: JobContext, PLUG_EVENT <: Serializable] extends Task
           }
 
           private val _filters = if (c.has(filter)) c.get[Seq[NornsConfig]](filter).map(f =>
-            newInstanceBaseTaskPlugin[Filter[PLUG_EVENT]](f.get[String](plugin), f, jc, tc))
+            newInstanceBaseTaskPlugin[Processors[PLUG_EVENT]](f.get[String](plugin), f, jc, tc))
           else Seq.empty
 
           private val _outputs = c.get[Seq[NornsConfig]](output).map(f =>
@@ -61,7 +61,7 @@ class BaseTaskBuilder[JC <: JobContext, PLUG_EVENT <: Serializable] extends Task
 
           override def input: Input[PLUG_EVENT] = _input
 
-          override def filters: Seq[Filter[PLUG_EVENT]] = _filters
+          override def filters: Seq[Processors[PLUG_EVENT]] = _filters
 
           override def outputs: Seq[Output[PLUG_EVENT]] = _outputs
         }

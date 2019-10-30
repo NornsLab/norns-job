@@ -9,7 +9,7 @@ trait PluginTask[PLUG_EVENT <: Serializable] extends Task {
 
   def input: Input[PLUG_EVENT]
 
-  def filters: Seq[Filter[PLUG_EVENT]] = Seq.empty
+  def filters: Seq[Processors[PLUG_EVENT]] = Seq.empty
 
   def outputs: Seq[Output[PLUG_EVENT]]
 }

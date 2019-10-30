@@ -14,7 +14,7 @@ abstract class BasePluginTask[PLUG_EVENT <: Serializable] extends PluginTask[PLU
   override def start(): Unit = {
     // 推导为链式写法 待测试 多输出情况下提供cache操作(可用filter实现，具体根据输出out是否为多个自行定义) 提供并行写出操作
     outputs.foreach {
-      _.output(filters.foldLeft(input.input)((d, f) => f.filter(d)))
+      _.output(filters.foldLeft(input.input)((d, f) => f.process(d)))
     }
 
     allPlug.foreach(_.start())

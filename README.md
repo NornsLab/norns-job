@@ -1,7 +1,7 @@
 # norns-job(SNAPSHOT)
 ![JDK](https://img.shields.io/badge/JDK-1.8-brightgreen.svg?style=flat-square)
 ![Scala](https://img.shields.io/badge/Scala-2.12.8-brightgreen.svg?style=flat-square)
-![Gradle](https://img.shields.io/badge/Gradle-5.6.1-brightgreen.svg?style=flat-square)
+![Gradle](https://img.shields.io/badge/Gradle-5.6.2-brightgreen.svg?style=flat-square)
 [![CodeFactor](https://www.codefactor.io/repository/github/nornslab/norns-job/badge/master)](https://www.codefactor.io/repository/github/nornslab/norns-job/overview/master)
 [![Known Vulnerabilities](https://snyk.io//test/github/NornsLab/norns-job/badge.svg?targetFile=build.gradle)](https://snyk.io//test/github/NornsLab/norns-job?targetFile=build.gradle)
 # 为什么使用
